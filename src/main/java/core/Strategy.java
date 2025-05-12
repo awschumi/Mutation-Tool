@@ -1,5 +1,7 @@
 package core;
 
+import storage.FileInfo;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -8,5 +10,5 @@ import java.util.ArrayList;
  */
 public abstract class Strategy
 {
-    public abstract ArrayList<Mutant> mutate(File fileToMutate);
+    public abstract FileInfo mutate(File fileToMutate);
 }

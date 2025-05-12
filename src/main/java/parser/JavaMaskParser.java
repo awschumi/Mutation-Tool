@@ -4,11 +4,16 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.Range;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.UnaryExpr;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
 import core.MaskParser;
+import storage.*;
 import strategy.StrategyFillMask;
 
 import java.util.ArrayList;
@@ -29,26 +34,101 @@ public class JavaMaskParser extends MaskParser
         super(strat);
     }
 
-    @Override
-    public List<String> generateMaskVariants(String sourceCode)
+    /*
+     * Extracts the position from an expression
+     */
+    public static PositionInfo rangeToPosition(Range range, String[] codeInLines)
     {
+        PositionInfo positionInfo = new PositionInfo();
+        positionInfo.setBeginLine(range.begin.line);
+        positionInfo.setBeginColumn(range.begin.column);
+        positionInfo.setEndLine(range.end.line);
+        positionInfo.setEndColumn(range.end.column);
+        positionInfo.setBeginIndex(lineColToIndex(codeInLines,positionInfo.beginLine,positionInfo.beginColumn));
+        positionInfo.setEndIndex(lineColToIndex(codeInLines,positionInfo.endLine,positionInfo.endColumn));
+        return positionInfo;
+    }
+
+    /*
+     * @param toMask If true, will generate mask code, nothing otherwise
+     */
+    @Override
+    public ArrayList<ClassInfo> generateVariants(String sourceCode, boolean toMask)
+    {
+        ArrayList<ClassInfo> classes = new ArrayList<ClassInfo>();
+        String[] codeInLines = sourceCode.split("\\r?\\n", -1);
+
         // Configuration of the parser
-        ParserConfiguration config = new ParserConfiguration()
-                .setLexicalPreservationEnabled(true);
+        ParserConfiguration config =
+                new ParserConfiguration()
+                        .setLexicalPreservationEnabled(true);
         JavaParser parser = new JavaParser(config);
-        this.cu = parser.parse(sourceCode)
-                .getResult().orElseThrow();
+        CompilationUnit cu = parser
+                .parse(sourceCode)
+                .getResult()
+                .orElseThrow();
         LexicalPreservingPrinter.setup(cu);
 
-        List<String> variants = new ArrayList<>();
+        // Parsing every class
+        cu.findAll(ClassOrInterfaceDeclaration.class).forEach(
+                cls ->
+                {
+                    ClassInfo classInfo = new ClassInfo();
 
-        for (BinaryExpr expr : cu.findAll(BinaryExpr.class))
-        {
-            binaryMaskOperand(expr, true, variants);   // a -> <mask>
-            binaryMaskOperand(expr, false, variants);  // b -> <mask>
-            binaryMaskOperator(expr, variants);             // + -> <mask>
-        }
-        return variants;
+                    // Stores the current class infos
+                    classInfo.setClassName(cls.getNameAsString());
+                    classInfo.setPosition(rangeToPosition(cls.getRange().get(), codeInLines));
+
+                    ArrayList<MethodInfo> methods = new ArrayList<MethodInfo>();
+
+                    // Parsing every method
+                    for(MethodDeclaration meth: cls.getMethods())
+                    {
+                        // Stores the current method info
+                        MethodInfo methodInfo = new MethodInfo();
+
+                        // 1) Browse every method + get some methods infos
+                        methodInfo.setMethodName(meth.getNameAsString());
+                        methodInfo.setPosition(rangeToPosition(meth.getRange().get(), codeInLines));
+                        methodInfo.setDeclaration(meth.getDeclarationAsString(false,false,false));
+
+                        // 2) Browse every statement (≈ lines),
+                        // get infos & check for binary / unary operators
+
+                        // Parsing every statement
+                        for(Statement n: meth.getBody().get().getStatements())
+                        {
+                            // Stores the current statement info
+                            StatementInfo statementInfo = new StatementInfo();
+
+                            statementInfo.setStatement(n.toString());
+                            statementInfo.setPosition(rangeToPosition(n.getRange().get(), codeInLines));
+
+                            methodInfo.addStatement(statementInfo);
+
+                            if(toMask)
+                            {
+                                // Parsing every expression
+                                for (BinaryExpr expr : n.findAll(BinaryExpr.class))
+                                {
+                                    statementInfo.addMaskingInfos(binaryMaskOperand(expr, true, codeInLines));
+                                    statementInfo.addMaskingInfos(binaryMaskOperand(expr, false, codeInLines));
+                                    statementInfo.addMaskingInfos(binaryMaskOperator(expr, codeInLines));
+                                }
+
+//                                for(UnaryExpr expr: n.findAll(UnaryExpr.class))
+//                                {
+//                                    // TODO
+//                                }
+                            }
+                            methodInfo.addStatement(statementInfo);
+                        }
+                        classInfo.addMethodInfo(methodInfo);
+                    }
+                    classes.add(classInfo);
+                });
+
+        return classes;
     }
 
     public void binaryMaskOperand(BinaryExpr expr, boolean left, List<String> variants)
@@ -65,35 +145,50 @@ public class JavaMaskParser extends MaskParser
         expr.setRight(copy.getRight());
     }
 
-    @Override
-    public void binaryMaskOperand(Object expr, boolean left, List<String> variants)
+    public MaskingInfo binaryMaskOperand(BinaryExpr expr, boolean left, String[] codeInLines)
     {
-        this.binaryMaskOperand((BinaryExpr) expr, left, variants);
+        MaskingInfo maskingInfo = new MaskingInfo();
+        if(left)
+        {
+            maskingInfo.position = (rangeToPosition(expr.getLeft().getRange().get(), codeInLines));
+            maskingInfo.setMaskingType("BinaryExpressionLeft");
+        }
+        else
+        {
+            maskingInfo.position = (rangeToPosition(expr.getRight().getRange().get(), codeInLines));
+            //System.out.println("INDEXES FOR BINARY RIGHT: " + maskingInfoRight);
+            maskingInfo.setMaskingType("BinaryExpressionRight");
+        }
+        return maskingInfo;
     }
 
-    public void binaryMaskOperator(BinaryExpr expr, List<String> variants)
+    @Override
+    public MaskingInfo binaryMaskOperand(Object expr, boolean left, String[] codeInLines)
     {
+        return binaryMaskOperand((BinaryExpr) expr, left, codeInLines);
+    }
+
+    public MaskingInfo binaryMaskOperator(BinaryExpr expr, String[] codeInLines)
+    {
+        MaskingInfo maskingInfo = new MaskingInfo();
+
+        // Operator replacement Function
         expr.getTokenRange().ifPresent(tokenRange -> {
             // Look for token, e.g: '+'
             tokenRange.forEach(token -> {
                 if (token.getText().equals(expr.getOperator().asString())) {
-                    // Get range (line/column, begin - end)
-                    Range opRange = token.getRange()
-                            .orElseThrow(() -> new IllegalStateException("Token without range"));
-
-                    String code = LexicalPreservingPrinter.print(cu);
-                    int begin = lineColToIndex(code, opRange.begin.line, opRange.begin.column);
-                    int end = lineColToIndex(code, opRange.end.line, opRange.end.column);
-                    String mutated = code.substring(0, begin) + strategy.getMask() + code.substring(end+1);
-                    variants.add(mutated);
+                    maskingInfo.position = (rangeToPosition(token.getRange().get(), codeInLines));
+                    maskingInfo.setMaskingType("BinaryExpressionToken");
                 }
             });
         });
+
+        return maskingInfo;
     }
 
     @Override
-    public void binaryMaskOperator(Object expr, List<String> variants)
+    public MaskingInfo binaryMaskOperator(Object expr, String[] codeInLines)
     {
-        binaryMaskOperator((BinaryExpr) expr, variants);
+        return binaryMaskOperator((BinaryExpr) expr, codeInLines);
     }
 }

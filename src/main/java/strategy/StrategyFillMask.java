@@ -6,6 +6,7 @@ import ai.onnxruntime.*;
 import core.MaskParser;
 import core.Mutant;
 import core.Strategy;
+import storage.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -178,102 +179,125 @@ public class StrategyFillMask extends Strategy
     }
 
     @Override
-    public ArrayList<Mutant> mutate(File fileToMutate)
+    public FileInfo mutate(File fileToMutate)
     {
-        ArrayList<Mutant> candidates = new ArrayList<>();
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.fileName = fileToMutate.getName();
+        fileInfo.pathName = fileToMutate.getAbsolutePath();
+        fileInfo.language = "Java";
+        fileInfo.strategy = this.getClass().getName();
 
         try
         {
+            String codeToMutate = Files.readString(fileToMutate.toPath());
+
             // 1) Initialize
             /** The environment has already been initialized in the constructor **/
 
             // Generate every variant of the code with masks
-            List<String> variants = parser.generateMaskVariants(Files.readString(fileToMutate.toPath()));
+            ArrayList<ClassInfo> classes = parser.generateVariants(Files.readString(fileToMutate.toPath()), true);
 
-            for(String toMutate: variants) {
-                // Center the mask
-                toMutate = centerTheMask(toMutate);
-                Encoding encoding = tokenizer.encode(toMutate);
+            // Browse every mask info to generate the whole code masked
+            for(ClassInfo cl: classes)
+            {
+                for(MethodInfo me: cl.methods)
+                {
+                    for(StatementInfo st: me.statements)
+                    {
+                        for(MaskingInfo ma: st.maskingInfos)
+                        {
+                            String toMutate =
+                                    codeToMutate.substring(0,ma.position.beginIndex)
+                                    + mask
+                                    + codeToMutate.substring(ma.position.endIndex+1);
 
-                long[] inputIds = encoding.getIds();
-                long[] attentionMask = encoding.getAttentionMask();
-                long[] typeIds = encoding.getTypeIds(); // Add for Bert
+                            // Center the mask
+                            String toMutateCenter = centerTheMask(toMutate);
+                            Encoding encoding = tokenizer.encode(toMutateCenter);
 
-                // Determining the mask index
-                int maskIndex = 0;
-                for (String s : encoding.getTokens()) {
-                    if (s.trim().equals(this.mask)) break;
-                    maskIndex++;
-                }
+                            long[] inputIds = encoding.getIds();
+                            long[] attentionMask = encoding.getAttentionMask();
+                            long[] typeIds = encoding.getTypeIds(); // Add for Bert
 
-                // 2) Prepare inputs (batch size = 1)
-                OnnxTensor idsTensor = OnnxTensor.createTensor(env, new long[][]{inputIds});
-                OnnxTensor maskTensor = OnnxTensor.createTensor(env, new long[][]{attentionMask});
-                OnnxTensor typeTensor = OnnxTensor.createTensor(env, new long[][]{typeIds});
-                Map<String, OnnxTensor> inputs = Map.of(
-                        "input_ids", idsTensor,
-                        "attention_mask", maskTensor
-                        //"token_type_ids", typeTensor // Add for Bert
-                );
+                            // Determining the mask index
+                            int maskIndex = 0;
+                            for (String s : encoding.getTokens()) {
+                                if (s.trim().equals(this.mask)) break;
+                                maskIndex++;
+                            }
 
-                try {
-                    OrtSession.Result result = session.run(inputs);
-                    // The first (and only) output is [batch, seq_len, vocab_size]
+                            // 2) Prepare inputs (batch size = 1)
+                            OnnxTensor idsTensor = OnnxTensor.createTensor(env, new long[][]{inputIds});
+                            OnnxTensor maskTensor = OnnxTensor.createTensor(env, new long[][]{attentionMask});
+                            OnnxTensor typeTensor = OnnxTensor.createTensor(env, new long[][]{typeIds});
+                            Map<String, OnnxTensor> inputs = Map.of(
+                                    "input_ids", idsTensor,
+                                    "attention_mask", maskTensor
+                                    //"token_type_ids", typeTensor // Add for Bert
+                            );
 
-                    float[][][] logits = (float[][][]) result.get(0).getValue();
-                    float[] maskLogits = logits[0][maskIndex];
+                            try {
+                                OrtSession.Result result = session.run(inputs);
+                                // The first (and only) output is [batch, seq_len, vocab_size]
 
-                    // 2. Map containing mutation:score, e.g: ["+":0.6, " +":0.2, "-":0.1, ...]
-                    LinkedHashMap<String, Double> preds = getTopKMutations(maskLogits, 5);
-                    //preds.forEach(System.out::printf);
-                    int k = 5;
-                    PriorityQueue<Integer> pq = new PriorityQueue<>(
-                            Comparator.comparingDouble(i -> -maskLogits[i])
-                    );
-                    for (int i = 0; i < maskLogits.length; i++) pq.add(i);
-                    List<Integer> topIds = IntStream.range(0, k)
-                            .mapToObj(_i -> pq.poll())
-                            .collect(Collectors.toList());
+                                float[][][] logits = (float[][][]) result.get(0).getValue();
+                                float[] maskLogits = logits[0][maskIndex];
 
-                    for (int id : topIds) {
-                        int lineNumber = 0;
-                        String lineCode = "";
-                        String mutation = "";
-                        String score = "";
+                                // 2. Map containing mutation:score, e.g: ["+":0.6, " +":0.2, "-":0.1, ...]
+                                LinkedHashMap<String, Double> preds = getTopKMutations(maskLogits, 5);
 
-                        long[] newIds = inputIds.clone();
-                        newIds[maskIndex] = id;
-                        String decoded = tokenizer.decode(newIds);
+                                int k = 5;
+                                PriorityQueue<Integer> pq = new PriorityQueue<>(
+                                        Comparator.comparingDouble(i -> -maskLogits[i])
+                                );
+                                for (int i = 0; i < maskLogits.length; i++) pq.add(i);
+                                List<Integer> topIds = IntStream.range(0, k)
+                                        .mapToObj(_i -> pq.poll())
+                                        .collect(Collectors.toList());
 
-                        for (HashMap.Entry<String, Double> entry : preds.entrySet()) {
-                            String key = entry.getKey();
-                            double value = entry.getValue();
+                                for (int id : topIds) {
+                                    String mutation = "";
+                                    String score = "";
 
-                            mutation = key;
-                            score = String.valueOf(value);
+                                    long[] newIds = inputIds.clone();
+                                    newIds[maskIndex] = id;
+                                    String decoded = tokenizer.decode(newIds);
 
-                            preds.remove(key);
-                            break;
+                                    for (HashMap.Entry<String, Double> entry : preds.entrySet()) {
+                                        String key = entry.getKey();
+                                        double value = entry.getValue();
+
+                                        mutation = key;
+                                        score = String.valueOf(value);
+
+                                        preds.remove(key);
+                                        break;
+                                    }
+                                    PredictionInfo prediction = new PredictionInfo();
+                                    prediction.statementBefore = codeToMutate.substring(st.position.beginIndex, st.position.endIndex+1);
+                                    prediction.statementAfter = codeToMutate.substring(st.position.beginIndex, ma.position.beginIndex)
+                                            + mutation
+                                            + codeToMutate.substring(ma.position.endIndex+1, st.position.endIndex+1);
+                                    prediction.tokenPredicted = mutation;
+                                    prediction.metrics.put("SoftMax", score);
+                                    ma.predictions.add(prediction);
+                                }
+                            }
+                            catch (OrtException e)
+                            {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        // Remove the CLS and SEP
-                        Mutant m = new Mutant(fileToMutate, lineNumber, decoded.substring(this.cls.length(), decoded.length() - this.sep.length()), mutation);
-
-                        m.addMetric("SoftMax", score);
-                        candidates.add(m);
                     }
-
-                } catch (Exception e) {
-                    System.err.println("Something went wrong... " + e);
-                    return candidates;
                 }
             }
+            fileInfo.classes = classes;
         }
-        catch (Exception e)
-        {
-            System.err.println("Something went wrong... " + e);
-            throw new RuntimeException(e);
+        catch (Exception e) {
+            return fileInfo;
+            //throw new RuntimeException(e);
         }
-        return candidates;
+        return fileInfo;
     }
 
     /*

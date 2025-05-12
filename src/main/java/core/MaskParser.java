@@ -1,7 +1,11 @@
 package core;
 
+import com.github.javaparser.ast.expr.BinaryExpr;
+import storage.ClassInfo;
+import storage.MaskingInfo;
 import strategy.StrategyFillMask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -29,38 +33,36 @@ public abstract class MaskParser
     /*
      * For a same code, return the list of the code with different masks (unary, binary, boolean)
      * @param sourceCode The code to parse
+     * @param toMask
      */
-    public abstract List<String> generateMaskVariants(String sourceCode);
+    public abstract ArrayList<ClassInfo> generateVariants(String sourceCode, boolean toMask);
 
     /*
-     * Masks the left or right operand by adding it the variant list
+     * Masks the left or right operand
      * e.g: "i = 1" --> "<mask> = 1"
      * @param expr The expression to mask
      * @param variants The list of existing variants
+     * @param codeInLines The code split in lines
      */
-    public abstract void binaryMaskOperand(Object expr, boolean left, List<String> variants);
+    public abstract MaskingInfo binaryMaskOperand(Object expr, boolean left, String[] codeInLines);
 
     /*
-     * Masks the operator by adding it to the variant list
+     * Masks the operator
      * e.g: "i = 1" --> "<mask> = 1"
      * @param expr The expression to mask
-     * @param left If left = true, masking the left operand, right otherwise
-     * @param variants The list of existing variants
+     * @param codeInLines The code split in lines
      */
-    public abstract void binaryMaskOperator(Object expr, List<String> variants);
+    public abstract MaskingInfo binaryMaskOperator(Object expr, String[] codeInLines);
 
     /*
      * Converts a line-column position to an index position
      */
-    public static int lineColToIndex(String code, int line, int column)
+    public static int lineColToIndex(String[] codeInLines, int line, int column)
     {
-        // Splitting without removing empty lines
-        String[] lines = code.split("\\r?\\n", -1);
-
         int idx = 0;
         for (int i = 1; i < line; i++)
         {
-            idx += lines[i - 1].length();
+            idx += codeInLines[i - 1].length();
             idx += 1;
         }
 
