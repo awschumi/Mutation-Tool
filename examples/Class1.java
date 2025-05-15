@@ -11,5 +11,10 @@ public class Class1
     {
         if(s != null) System.out.println(s.toCharArray()[0]);
         else System.out.println("null");
+
+        for(int i = 0; i < 5; i++)
+        {
+            tmp = 1+i;
+        }
     }
 }

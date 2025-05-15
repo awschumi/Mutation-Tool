@@ -12,6 +12,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.printer.lexicalpreservation.LexicalPreservingPrinter;
+import core.Language;
 import core.MaskParser;
 import storage.*;
 import strategy.StrategyFillMask;
@@ -27,7 +28,7 @@ public class JavaMaskParser extends MaskParser
 {
     private CompilationUnit cu;
 
-    public JavaMaskParser(){}
+    public JavaMaskParser(){ this.language = Language.JAVA; }
 
     public JavaMaskParser(StrategyFillMask strat)
     {
@@ -156,7 +157,6 @@ public class JavaMaskParser extends MaskParser
         else
         {
             maskingInfo.position = (rangeToPosition(expr.getRight().getRange().get(), codeInLines));
-            //System.out.println("INDEXES FOR BINARY RIGHT: " + maskingInfoRight);
             maskingInfo.setMaskingType("BinaryExpressionRight");
         }
         return maskingInfo;

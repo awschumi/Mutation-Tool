@@ -3,7 +3,7 @@ package core;
 import java.io.File;
 import java.util.HashMap;
 
-/*
+/**
  * This class represents a mutation with some information,
  * like the original file, a list of metrics etc.
  */

@@ -46,6 +46,14 @@
             <artifactId>javaparser-core</artifactId>
             <version>3.26.4</version>
         </dependency>
+
+        <!-- C++ Parsing -->
+        <!-- https://mvnrepository.com/artifact/ch.usi.si.seart/java-tree-sitter -->
+        <dependency>
+            <groupId>ch.usi.si.seart</groupId>
+            <artifactId>java-tree-sitter</artifactId>
+            <version>1.12.0</version>
+        </dependency>
     </dependencies>
 
 </project>

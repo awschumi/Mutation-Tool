@@ -1,6 +1,9 @@
 package core;
 
+import export.JsonExport;
+import parser.parsinghandle.ParsingHandler;
 import storage.*;
+import parser.parsinghandle.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,35 +11,85 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.logging.Handler;
 import java.util.stream.Stream;
 
-/*
+/**
  * Class containing custom options for the mutation
  * e.g: Strategy (fill-mask or LLM), number of threads, metrics, path where export mutants and results
  */
 public class Mutator
 {
+    static
+    {
+        Mutator.getInstance();
+    }
+    //
+    private static Mutator instance = null;
+
     // How will be made the mutation?
     private Strategy strategy;
 
-    // What languages will be processed (Java, Python, C++?)
-    private ArrayList<Language> languages;
+    // What parsers will be used (Java, Python, C++?)
+    private ArrayList<MaskParser> parsers = new ArrayList<MaskParser>();;
 
     // The number of threads for the mutation
-    private int threadsNumber;
+    private int threadsNumber = 4;
 
     // Where will be exported all the results, such as the mutated files
-    private Path exportPath;
+    private Path exportPath = Path.of("output");
 
-    private Mutator(MutatorBuilder b)
+    private ParsingHandler fileHandler = ParsingHandler.link(
+                new JavaHandler(),
+                new CppHandler(),
+                new PythonHandler(),
+                new CHandler()
+        );
+
+    public static Mutator getInstance()
     {
-        this.strategy = b.strategy;
-        this.languages = b.languages;
-        this.threadsNumber = b.threadsNumber;
-        this.exportPath = b.exportPath;
+        if(instance == null)
+            Mutator.instance = new Mutator();
+        return instance;
     }
 
-    /*
+    private Mutator(){}
+
+    public Mutator setStrategy(Strategy s)
+    {
+        this.strategy = s;
+        return this;
+    }
+
+    public Mutator addParser(MaskParser p)
+    {
+        this.parsers.add(p);
+        return this;
+    }
+
+    public Mutator setThreadsNumber(int n)
+    {
+        this.threadsNumber = n;
+        return this;
+    }
+
+    public Mutator setExportPath(Path p)
+    {
+        this.exportPath = p;
+        return this;
+    }
+
+    public ArrayList<MaskParser> getParsers()
+    {
+        return this.parsers;
+    }
+
+    public ParsingHandler getFileHandler()
+    {
+        return this.fileHandler;
+    }
+
+    /**
      * Mutates only the file
      */
     public FileInfo mutate(File file)
@@ -45,15 +98,14 @@ public class Mutator
         {
             System.out.println("FILE NAME: " + file.getAbsolutePath());
             FileInfo fileInfo = this.strategy.mutate(file);
-            //System.out.println("For the file " + file.getPath() + ", " + mutants.size() + " mutants have been generated");
+            System.out.println(fileInfo.visit(new JsonExport()));
             return fileInfo;
         } catch (Exception e) {
             return null;
-            //throw new RuntimeException(e);
         }
     }
 
-    /*
+    /**
      * Mutates all the possible files included in the directory
      */
     public ArrayList<FileInfo> mutateAll(Path path)
@@ -67,8 +119,9 @@ public class Mutator
             {
                 try {
                     FileInfo f = mutate(p.toFile());
-                    if (f != null) fileInfos.add(f);
-                    System.out.println("/** FILE MUTATED **/");
+                    if (f != null)
+                    {fileInfos.add(f);
+                    System.out.println("/** FILE MUTATED **/");}
                 } catch (Exception e) {
                     System.out.println("(/(/(/(/(/(/");
                 }
@@ -76,7 +129,6 @@ public class Mutator
             return fileInfos;
         } catch (Exception e) {
             return fileInfos;
-            //throw new RuntimeException(e);
         }
     }
 
@@ -85,7 +137,7 @@ public class Mutator
         return mutateAll(Path.of(path));
     }
 
-    /*
+    /**
      * Generate mutant files in the export path
      * @param fileInfos A list of file infos
      */
@@ -157,46 +209,6 @@ public class Mutator
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-
-    /** BUILDER PART **/
-
-    public static class MutatorBuilder
-    {
-        private Strategy strategy;
-        private ArrayList<Language> languages = new ArrayList<Language>();
-        private int threadsNumber;
-        private Path exportPath;
-
-        public MutatorBuilder setStrategy(Strategy s)
-        {
-            this.strategy = s;
-            return this;
-        }
-
-        public MutatorBuilder addLanguage(Language l)
-        {
-            this.languages.add(l);
-            return this;
-        }
-
-        public MutatorBuilder setThreadsNumber(int n)
-        {
-            this.threadsNumber = n;
-            return this;
-        }
-
-        public MutatorBuilder setExportPath(Path p)
-        {
-            this.exportPath = p;
-            return this;
-        }
-
-        public Mutator build()
-        {
-            return new Mutator(this);
         }
     }
 }

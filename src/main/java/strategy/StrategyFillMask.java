@@ -5,7 +5,9 @@ import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import ai.onnxruntime.*;
 import core.MaskParser;
 import core.Mutant;
+import core.Mutator;
 import core.Strategy;
+import parser.parsinghandle.ParsingHandler;
 import storage.*;
 
 import java.io.File;
@@ -50,9 +52,6 @@ public class StrategyFillMask extends Strategy
     // The file name of the tokenizer json, e.g: "tokenizer.json"
     private String tokenizerName;
 
-    // The parser to parse the code
-    private MaskParser parser;
-
     // Tokenizer only used for centering the mask
     private HuggingFaceTokenizer tokenizerForCenteringMask;
 
@@ -73,7 +72,6 @@ public class StrategyFillMask extends Strategy
         this.pathToModel = b.pathToModel;
         this.modelName = b.modelName;
         this.tokenizerName = b.tokenizerName;
-        this.parser = b.parser;
 
         try {
             this.tokenizerForCenteringMask = HuggingFaceTokenizer.builder()
@@ -92,10 +90,11 @@ public class StrategyFillMask extends Strategy
         try { setEnvironment(); }
         catch (OrtException e) { throw new RuntimeException(e); }
 
-        this.parser.setStrategy(this);
+        for(MaskParser parser: Mutator.getInstance().getParsers())
+            parser.setStrategy(this);
     }
 
-    /*
+    /**
      * Initializes once the environment
      * (otherwise the memory of the program will get bigger and bigger and your computer will crash :( )
      */
@@ -118,7 +117,7 @@ public class StrategyFillMask extends Strategy
         return cls;
     }
 
-    /*
+    /**
      * Returns the code to be mutated corresponding to a maximum of maxTokens tokens centered around the mask
      * In toMutate, there must be the mask (e.g: "... <mask> ...")
      */
@@ -195,7 +194,8 @@ public class StrategyFillMask extends Strategy
             /** The environment has already been initialized in the constructor **/
 
             // Generate every variant of the code with masks
-            ArrayList<ClassInfo> classes = parser.generateVariants(Files.readString(fileToMutate.toPath()), true);
+            ArrayList<ClassInfo> classes = Mutator.getInstance().getFileHandler().generateVariants(fileToMutate, Mutator.getInstance().getParsers());
+            if(classes == null) return null;
 
             // Browse every mask info to generate the whole code masked
             for(ClassInfo cl: classes)
@@ -300,7 +300,7 @@ public class StrategyFillMask extends Strategy
         return fileInfo;
     }
 
-    /*
+    /**
      * ==> PUT IT AS A METRIC
      * Computes the softmax for the generated mutant
      * Reminder: for (x1,...,xn) as input, softmax(x1,...,xn) = (y1,...,yn)
@@ -321,7 +321,7 @@ public class StrategyFillMask extends Strategy
         return probs;
     }
 
-    /*
+    /**
      * Returns the top k mutations (format: ["mutation1":softmax, "mutation2":softmax, ...])
      */
     public LinkedHashMap<String, Double> getTopKMutations(float[] maskLogits, int topK)
