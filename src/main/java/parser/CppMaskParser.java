@@ -49,7 +49,7 @@ public class CppMaskParser extends MaskParser
             ClassInfo classInfo = new ClassInfo();
             classInfo.className = classNode.getChild(1).getContent();
             classInfo.position = rangeToPosition(classNode.getStartPoint(), classNode.getEndPoint(), codeInLines);
-            System.out.println("The class: " + classInfo.className);
+            //System.out.println("The class: " + classInfo.className);
 
             // Get every method/function node
             List<Node> listOfMethodNodes = new ArrayList<>();
@@ -61,7 +61,7 @@ public class CppMaskParser extends MaskParser
                 methodInfo.methodName = methodNode.getChild(1).getChild(0).getContent();
                 methodInfo.declaration = methodNode.getChild(0).getContent() + " " + methodNode.getChild(1).getContent();
                 methodInfo.position = rangeToPosition(methodNode.getStartPoint(), methodNode.getEndPoint(), codeInLines);
-                System.out.println("\tThe method/function: [" + methodNode.getChild(0).getContent() + " " + methodNode.getChild(1).getContent() + "]");
+                //System.out.println("\tThe method/function: [" + methodNode.getChild(0).getContent() + " " + methodNode.getChild(1).getContent() + "]");
 
                 // Get every statement
                 List<Node> listOfStatementNodes = new ArrayList<>();
@@ -73,7 +73,7 @@ public class CppMaskParser extends MaskParser
 
                     statementInfo.statement = statementNode.getContent();
                     statementInfo.position = rangeToPosition(statementNode.getStartPoint(), statementNode.getEndPoint(), codeInLines);
-                    System.out.println("\t\tThe statement: " + statementNode.getContent());
+                    //System.out.println("\t\tThe statement: " + statementNode.getContent());
                     if(toMask)
                     {
                         // Get every sub nodes

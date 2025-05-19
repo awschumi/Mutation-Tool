@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 import java.util.stream.Stream;
 
@@ -24,6 +26,7 @@ public class Mutator
     {
         Mutator.getInstance();
     }
+
     //
     private static Mutator instance = null;
 
@@ -35,6 +38,9 @@ public class Mutator
 
     // The number of threads for the mutation
     private int threadsNumber = 4;
+
+    // Shared pool of maximum 4 threads
+    private ExecutorService sharedPool = Executors.newFixedThreadPool(4);
 
     // Where will be exported all the results, such as the mutated files
     private Path exportPath = Path.of("output");
@@ -70,6 +76,7 @@ public class Mutator
     public Mutator setThreadsNumber(int n)
     {
         this.threadsNumber = n;
+        this.sharedPool = Executors.newFixedThreadPool(4);
         return this;
     }
 
@@ -89,6 +96,11 @@ public class Mutator
         return this.fileHandler;
     }
 
+    public ExecutorService getSharedPool()
+    {
+        return sharedPool;
+    }
+
     /**
      * Mutates only the file
      */
@@ -98,7 +110,7 @@ public class Mutator
         {
             System.out.println("FILE NAME: " + file.getAbsolutePath());
             FileInfo fileInfo = this.strategy.mutate(file);
-            System.out.println(fileInfo.visit(new JsonExport()));
+            //System.out.println(fileInfo.visit(new JsonExport()));
             return fileInfo;
         } catch (Exception e) {
             return null;
@@ -182,7 +194,6 @@ public class Mutator
                                             //Creation of folder number 0, 1, ...
                                             Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
                                             Files.createDirectories(folderNumber);
-                                            System.out.println("(" + predictionNumber + ") Prediction info: " + pr.tokenPredicted);
                                             // Creation of the file
                                             File newFile = new File(folderNumber.toFile(), f.fileName);
                                             //System.out.println(newFile.getAbsolutePath());

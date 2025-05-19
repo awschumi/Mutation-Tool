@@ -1,5 +1,6 @@
 import core.Mutator;
 import export.JsonExport;
+import parser.CppMaskParser;
 import parser.JavaMaskParser;
 import storage.*;
 import strategy.StrategyFillMask;
@@ -24,7 +25,7 @@ public class MyClass
                 //.addParser(new CppMaskParser()) // Uncomment if you want to mutate C++ files
                 .setExportPath(Path.of("output"))
                 .setStrategy(strategy)
-                .setThreadsNumber(4);        // @TODO
+                .setThreadsNumber(16);
 
         // Mutate every file in our directory
         ArrayList<FileInfo> results = mutator.mutateAll("examples");
@@ -46,5 +47,7 @@ public class MyClass
                 throw new RuntimeException(e);
             }
         }
+
+        mutator.getSharedPool().shutdown();
     }
 }

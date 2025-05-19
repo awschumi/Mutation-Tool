@@ -54,7 +54,7 @@ public class JsonExport implements ExportVisitor
 
         if(!cl.methods.isEmpty())
         {
-            res += ",\t\"classinfos\": \n" + "\t{\n";
+            res += ",\t\"methodinfos\": \n" + "\t{\n";
             int i = 0;
             for(MethodInfo me: cl.methods)
             {

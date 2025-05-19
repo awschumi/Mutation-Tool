@@ -99,19 +99,19 @@ public class JavaMaskParser extends MaskParser
                         // Parsing every statement
                         for(Statement n: meth.getBody().get().getStatements())
                         {
+                            //System.out.println("Statements: " + n);
                             // Stores the current statement info
                             StatementInfo statementInfo = new StatementInfo();
 
                             statementInfo.setStatement(n.toString());
                             statementInfo.setPosition(rangeToPosition(n.getRange().get(), codeInLines));
 
-                            methodInfo.addStatement(statementInfo);
-
                             if(toMask)
                             {
                                 // Parsing every expression
                                 for (BinaryExpr expr : n.findAll(BinaryExpr.class))
                                 {
+                                    //System.out.println("Binary expr: " + expr);
                                     statementInfo.addMaskingInfos(binaryMaskOperand(expr, true, codeInLines));
                                     statementInfo.addMaskingInfos(binaryMaskOperand(expr, false, codeInLines));
                                     statementInfo.addMaskingInfos(binaryMaskOperator(expr, codeInLines));
