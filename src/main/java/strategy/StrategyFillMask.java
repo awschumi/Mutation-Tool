@@ -226,6 +226,9 @@ public class StrategyFillMask extends Strategy
                                     long[] inputIds = encoding.getIds();
                                     long[] attentionMask = encoding.getAttentionMask();
                                     long[] typeIds = encoding.getTypeIds(); // Add for Bert
+//                                    System.out.println("inputIds size: " + inputIds.length);
+//                                    System.out.println("attentionMask size: " + attentionMask.length);
+//                                    System.out.println("typeIds size: " + typeIds.length);
 
                                     // Determining the mask index
                                     int maskIndex = 0;
@@ -291,6 +294,7 @@ public class StrategyFillMask extends Strategy
                                             prediction.tokenPredicted = mutation;
                                             prediction.metrics.put("SoftMax", score);
                                             ma.predictions.add(prediction);
+                                            //System.gc();
                                         }
                                     }
                                     catch (OrtException e)
@@ -314,7 +318,7 @@ public class StrategyFillMask extends Strategy
             fileInfo.classes = classes;
         }
         catch (Exception e) {
-            return fileInfo;
+            return null;
             //throw new RuntimeException(e);
         }
         return fileInfo;

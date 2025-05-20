@@ -1,12 +1,15 @@
 package parser.parsinghandle;
 
+import compilation.Compiler;
 import core.Language;
 import core.MaskParser;
 import storage.ClassInfo;
+import storage.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -57,6 +60,29 @@ public abstract class ParsingHandler
      * Sets the language and the file extensions list
      */
     protected abstract void setSettings();
+
+    public boolean tryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, ArrayList<Compiler> compilers) throws IOException, InterruptedException
+    {
+        boolean canCompile = protectedTryCompile(fileInfo, projectRoot, originalFile, codeToCompile, compilers);
+
+        if(canCompile) return true;
+        else if(nextHandler != null) return nextHandler.tryCompile(fileInfo, projectRoot, originalFile, codeToCompile, compilers);
+        else return false;
+    }
+
+    protected boolean protectedTryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, ArrayList<Compiler> compilers) throws IOException, InterruptedException
+    {
+        // Check the language
+        if(!fileInfo.language.equals(this.lang.toString())) return false;
+        for(Compiler c: compilers)
+        {
+            if(c.getLanguage().equals(this.lang))
+            {
+                return c.tryCompile(projectRoot, originalFile, codeToCompile);
+            }
+        }
+        return false;
+    }
 
     public ArrayList<ClassInfo> generateVariants(File file, ArrayList<MaskParser> parsers)
     {

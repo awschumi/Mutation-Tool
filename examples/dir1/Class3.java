@@ -6,7 +6,7 @@ public class Class3
     public Class3()
     {
         setName("default");
-        setId("0");
+        setId(0);
     }
 
     public Class3(String name, int id)

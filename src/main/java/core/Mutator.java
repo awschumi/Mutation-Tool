@@ -1,5 +1,6 @@
 package core;
 
+import compilation.Compiler;
 import export.JsonExport;
 import parser.parsinghandle.ParsingHandler;
 import storage.*;
@@ -34,7 +35,10 @@ public class Mutator
     private Strategy strategy;
 
     // What parsers will be used (Java, Python, C++?)
-    private ArrayList<MaskParser> parsers = new ArrayList<MaskParser>();;
+    private ArrayList<MaskParser> parsers = new ArrayList<MaskParser>();
+
+    // Used for the compilation of the mutants
+    private ArrayList<Compiler> compilers = new ArrayList<Compiler>();
 
     // The number of threads for the mutation
     private int threadsNumber = 4;
@@ -43,7 +47,10 @@ public class Mutator
     private ExecutorService sharedPool = Executors.newFixedThreadPool(4);
 
     // Where will be exported all the results, such as the mutated files
-    private Path exportPath = Path.of("output");
+    private Path exportPath = Path.of("output").toAbsolutePath();
+
+    // The path containing the files to be mutated
+    private Path projectPath = Path.of("examples").toAbsolutePath();
 
     private ParsingHandler fileHandler = ParsingHandler.link(
                 new JavaHandler(),
@@ -73,22 +80,39 @@ public class Mutator
         return this;
     }
 
+    public Mutator addCompiler(Compiler c)
+    {
+        this.compilers.add(c);
+        return this;
+    }
+
     public Mutator setThreadsNumber(int n)
     {
         this.threadsNumber = n;
-        this.sharedPool = Executors.newFixedThreadPool(4);
+        this.sharedPool = Executors.newFixedThreadPool(n);
         return this;
     }
 
     public Mutator setExportPath(Path p)
     {
-        this.exportPath = p;
+        this.exportPath = p.toAbsolutePath();
+        return this;
+    }
+
+    public Mutator setProjectPath(Path p)
+    {
+        this.projectPath = p.toAbsolutePath();
         return this;
     }
 
     public ArrayList<MaskParser> getParsers()
     {
         return this.parsers;
+    }
+
+    public ArrayList<Compiler> getCompilers()
+    {
+        return this.compilers;
     }
 
     public ParsingHandler getFileHandler()
@@ -175,9 +199,13 @@ public class Mutator
                 1
                     Class3.cpp
          */
+        System.out.println("** List of all files **");
+        for (FileInfo f : fileInfos)
+            System.out.println("> " + f.pathName);
         for (FileInfo f : fileInfos) {
             File file = Path.of(f.pathName).toFile();
             try {
+                System.out.println("Pathname: " +f.pathName);
                 String content = Files.readString(Path.of(f.pathName));
                 Path folderName = Path.of(String.valueOf(exportPath.getFileName()), f.fileName.replace(".", "-"));
                 System.out.println(folderName);
@@ -191,20 +219,29 @@ public class Mutator
                                 for (MaskingInfo ma : st.maskingInfos) {
                                     try {
                                         for (PredictionInfo pr : ma.predictions) {
-                                            //Creation of folder number 0, 1, ...
-                                            Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
-                                            Files.createDirectories(folderNumber);
-                                            // Creation of the file
-                                            File newFile = new File(folderNumber.toFile(), f.fileName);
-                                            //System.out.println(newFile.getAbsolutePath());
-                                            String newFileName = newFile.getAbsolutePath();
-                                            FileWriter newFile1 = new FileWriter(newFileName);
-                                            newFile1.write(
-                                                    content.substring(0, st.position.beginIndex)
-                                                            + pr.statementAfter
-                                                            + content.substring(st.position.endIndex + 1)
-                                            );
-                                            newFile1.close();
+                                            String codeToCompile = content.substring(0, st.position.beginIndex)
+                                                    + pr.statementAfter
+                                                    + content.substring(st.position.endIndex + 1);
+
+                                            if(Mutator.getInstance().getFileHandler().tryCompile(
+                                                    f,
+                                                    this.projectPath.toString(),
+                                                    Path.of(f.pathName),
+                                                    codeToCompile,
+                                                    compilers)) {
+                                                //Creation of folder number 0, 1, ...
+                                                Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
+                                                Files.createDirectories(folderNumber);
+                                                // Creation of the file
+                                                // We want to create the file <=> the file can be compiled
+                                                // --> Compile the file: determine the type (Java, C++, C, etc.)
+                                                File newFile = new File(folderNumber.toFile(), f.fileName);
+                                                //System.out.println(newFile.getAbsolutePath());
+                                                String newFileName = newFile.getAbsolutePath();
+                                                FileWriter newFile1 = new FileWriter(newFileName);
+                                                newFile1.write(codeToCompile);
+                                                newFile1.close();
+                                            }
                                             predictionNumber++;
                                         }
                                     } catch (Exception e) {
