@@ -52,42 +52,6 @@ public class MyClass
                 throw new RuntimeException(e);
             }
         }
-
-//        ArrayList<Compiler> compilers = new ArrayList<>();
-//        compilers.add(new JavaTryCompiler());
-//
-//        FileInfo f = new FileInfo();
-//        f.language = "Java";
-//
-//        try {
-//            Stream<Path> paths = Files.walk(Path.of("/Users/schumi/java-crypto-utils/"));
-//
-//            paths.filter(Files::isRegularFile)
-//                    .forEach(p ->
-//                    {
-//                        if(p.toFile().getName().endsWith(".java")) {
-//                            try {
-//                                String code = Files.readString(p);
-//
-//                                System.out.println("Will " + p.toFile().getName() + "compile? " + Mutator.getInstance().getFileHandler().tryCompile(f,
-//                                        "/Users/schumi/java-crypto-utils",
-//                                        p,
-//                                        code,
-//                                        compilers));
-//                            } catch (Exception e) {
-//                                //throw new RuntimeException(e);
-//                            }
-//                        }
-//                    });
-//        } catch (Exception e) {
-//        }
-
-
-        //System.out.println(javaTryCompiler.tryCompile("/Users/schumi/java-crypto-utils",
-//                Path.of("/Users/schumi/java-crypto-utils/src/main/java/co/tunjos/crypto/crypto/CryptoUtils.java"),
-//                code));
-
-
         mutator.getSharedPool().shutdown();
     }
 }
