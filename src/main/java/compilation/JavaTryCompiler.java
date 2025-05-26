@@ -1,16 +1,22 @@
 package compilation;
 
 import core.Language;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.tools.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +40,7 @@ public class JavaTryCompiler extends Compiler
     }
 
     @Override
-    public boolean tryCompile(String projectRoot, Path originalFile, String codeToCompile) throws IOException, InterruptedException {
+    public boolean tryCompile(String projectRoot, Path originalFile, String codeToCompile, Path pathToExport) throws IOException, InterruptedException {
         // 1. Collect every .java files in the project
         List<Path> allPaths = Files.walk(Paths.get(projectRoot))
                 .filter(p -> p.toString().endsWith(".java"))
@@ -44,7 +50,6 @@ public class JavaTryCompiler extends Compiler
         List<File> files = new ArrayList<>();
         for (Path p : allPaths) {
             if (!p.equals(originalFile)) files.add(p.toFile());
-            else System.out.println("CACACACACA");
         }
 
         // 3. Prepare the filemanager
@@ -55,15 +60,14 @@ public class JavaTryCompiler extends Compiler
         // 4. Disk units
         Iterable<? extends JavaFileObject> diskUnits =
                 stdFM.getJavaFileObjectsFromFiles(files);
+        System.out.println(diskUnits);
         System.out.println("File: " + "string:///" + originalFile.toFile().getName());
 
         // 5. Mutation unit
-        JavaFileObject memUnit = new SimpleJavaFileObject(
-                URI.create("string:///" + originalFile.toFile().getName()), JavaFileObject.Kind.SOURCE) {
-            @Override public CharSequence getCharContent(boolean ignore) {
-                return codeToCompile;
-            }
-        };
+        JavaFileObject memUnit = new JavaStringObject(FilenameUtils.removeExtension(originalFile.toFile().getName()), codeToCompile);
+        JavaByteObject byteCode = new JavaByteObject(FilenameUtils.removeExtension(originalFile.toFile().getName()));
+        System.out.println(memUnit);
+        System.out.println(byteCode);
 
         // 6. The list of .jars (requires a pom.xml file in the project)
         // if cp.txt exists: no call to maven
@@ -99,8 +103,124 @@ public class JavaTryCompiler extends Compiler
                         d.getSource().getName(), d.getLineNumber(), d.getMessage(null))
         );
 
+        if(success)
+        {
+            if(!Path.of(pathToExport.toString(), "compiled-classes").toFile().exists())
+            {
+                Files.createDirectories(Path.of(pathToExport.toString(), "compiled-classes"));
+            }
+            stdFM.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(Path.of(pathToExport.toString(), "compiled-classes").toFile()));
+            task = compiler.getTask(
+                    null, stdFM, diagnostics, options, null, allUnits
+            );
+            task.call();
+        }
+
         stdFM.close();
 
         return success;
+    }
+
+    public static byte[] compile(String className, String sourceCode) throws CompilerException
+    {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        JavaByteObject javaByteObject = new JavaByteObject(className);
+        CompilerFileManager compilerFileManager = new CompilerFileManager(compiler.getStandardFileManager(diagnostics, null, null), javaByteObject);
+
+        List<String> options = Collections.emptyList();
+        JavaCompiler.CompilationTask compilationTask = compiler.getTask(
+                null, compilerFileManager, diagnostics,
+                options, null, () -> {
+                    JavaFileObject javaFileObject = new JavaStringObject(className, sourceCode);
+                    return Collections.singletonList(javaFileObject).iterator();
+                });
+
+        boolean compilationSuccessful = compilationTask.call();
+        if (!compilationSuccessful){
+            String message = diagnostics.getDiagnostics().stream().map(Object::toString).collect(Collectors.joining());
+            throw new CompilerException(String.format("Failed to compile class '%s':\n%s", className, message));
+        }
+        return javaByteObject.getBytes();
+    }
+}
+
+/// Source: https://marvin-haagen.de/tutorials/software/java/how-to-compile-java-code-at-runtime/
+
+/**
+ * Class used during the compilation operation
+ */
+class CompilerFileManager extends ForwardingJavaFileManager<StandardJavaFileManager>
+{
+    private final JavaFileObject javaFileObject;
+
+    public CompilerFileManager(StandardJavaFileManager fileManager, JavaFileObject javaFileObject)
+    {
+        super(fileManager);
+        this.javaFileObject = javaFileObject;
+    }
+
+    @Override
+    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException
+    {
+        return javaFileObject;
+    }
+}
+
+/**
+ * Class used to store the bytecode of the code
+ */
+class JavaByteObject extends SimpleJavaFileObject
+{
+    private ByteArrayOutputStream outputStream;
+
+    public JavaByteObject(String name)
+    {
+        super(URI.create(String.format("bytes:///%s%s", name, name.replaceAll("\\.", "/"))), Kind.CLASS);
+    }
+
+    @Override
+    public OutputStream openOutputStream() throws IOException
+    {
+        this.outputStream = new ByteArrayOutputStream();
+        return outputStream;
+    }
+
+    public byte[] getBytes()
+    {
+        return outputStream.toByteArray();
+    }
+}
+
+/**
+ * Class used to store the string of the class
+ */
+class JavaStringObject extends SimpleJavaFileObject
+{
+    private final String code;
+
+    public JavaStringObject(String className, String code)
+    {
+        super(URI.create(String.format(
+                "string:///%s%s",
+                className.replace('.','/'),
+                Kind.SOURCE.extension
+        )), Kind.SOURCE);
+        this.code = code;
+    }
+
+    @Override
+    public CharSequence getCharContent(boolean ignoreEncodingErrors)
+    {
+        return code;
+    }
+}
+
+/**
+ * Class used as an exception for the compilation
+ */
+class CompilerException extends Exception{
+    public CompilerException(String message) {
+        super(message);
     }
 }

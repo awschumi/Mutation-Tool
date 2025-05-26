@@ -27,7 +27,7 @@ public class MaskingInfo extends AbstractInfo
         return "MaskingInfo{" +
                 "maskingType='" + maskingType + '\'' +
                 ", position=" + position +
-                ", position=" + position +
+                ", prediction=" + predictions +
                 '}';
     }
 

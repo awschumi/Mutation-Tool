@@ -19,7 +19,8 @@ public abstract class Compiler
      * @param projectRoot The root of the project, e.g: "/usr/home/My-Project"
      * @param originalFile The original file of the code, e.g: "/usr/home/My-Project/src/java/A.java"
      * @param codeToCompile The code to be compiled, e.g: "public class A{...}"
+     * @param pathToExport The path to export our mutated code, e.g: "/usr/home/output/A-java/0"
      * @return true if the code compiles, false otherwise
      */
-    public abstract boolean tryCompile(String projectRoot, Path originalFile, String codeToCompile) throws IOException, InterruptedException;
+    public abstract boolean tryCompile(String projectRoot, Path originalFile, String codeToCompile, Path pathToExport) throws IOException, InterruptedException;
 }

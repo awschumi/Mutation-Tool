@@ -11,10 +11,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Handler;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -51,6 +54,9 @@ public class Mutator
 
     // The path containing the files to be mutated
     private Path projectPath = Path.of("examples").toAbsolutePath();
+
+    // The path containing the test files
+    private Path testsPath = Path.of("").toAbsolutePath();
 
     private ParsingHandler fileHandler = ParsingHandler.link(
                 new JavaHandler(),
@@ -105,6 +111,11 @@ public class Mutator
         return this;
     }
 
+    public Mutator setTestsPath(Path p) {
+        this.testsPath = p.toAbsolutePath();
+        return this;
+    }
+
     public ArrayList<MaskParser> getParsers()
     {
         return this.parsers;
@@ -125,6 +136,21 @@ public class Mutator
         return sharedPool;
     }
 
+    public Path getExportPath()
+    {
+        return exportPath;
+    }
+
+    public Path getProjectPath()
+    {
+        return projectPath;
+    }
+
+    public Path getTestsPath()
+    {
+        return testsPath;
+    }
+
     /**
      * Mutates only the file
      */
@@ -137,33 +163,56 @@ public class Mutator
             //System.out.println(fileInfo.visit(new JsonExport()));
             return fileInfo;
         } catch (Exception e) {
+            System.out.println("Exception 1 here");
             return null;
         }
     }
 
     /**
      * Mutates all the possible files included in the directory
+     * However, the tests classes must not be mutated
      */
     public ArrayList<FileInfo> mutateAll(Path path)
     {
         ArrayList<FileInfo> fileInfos = new ArrayList<>();
         try {
+            // List of all java test classes
+            List<Path> allPaths = Files.walk(this.testsPath)
+                    .filter(p -> p.toString().endsWith(".java"))
+                    .collect(Collectors.toList());
+
             Stream<Path> paths = Files.walk(path);
 
             paths.filter(Files::isRegularFile)
             .forEach(p ->
             {
-                try {
-                    FileInfo f = mutate(p.toFile());
-                    if (f != null)
-                    {fileInfos.add(f);
-                    System.out.println("/** FILE MUTATED **/");}
-                } catch (Exception e) {
-                    System.out.println("(/(/(/(/(/(/");
+                boolean canContinue = true;
+                for(Path testFile: allPaths)
+                {
+                    if (testFile.toAbsolutePath().toFile().getAbsolutePath().equals(p.toAbsolutePath().toFile().getAbsolutePath()))
+                    {
+                        canContinue = false;
+                        System.out.println("ON N'INCLUS PAS " + p.getFileName());
+                        break;
+                    }
+                }
+                if(canContinue)
+                {
+                    try
+                    {
+                        FileInfo f = mutate(p.toFile());
+                        if (f != null) {
+                            fileInfos.add(f);
+                            System.out.println("/** FILE MUTATED **/");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("(/(/(/(/(/(/");
+                    }
                 }
             });
             return fileInfos;
         } catch (Exception e) {
+            System.out.println("Exception? " + e);
             return fileInfos;
         }
     }
@@ -219,18 +268,29 @@ public class Mutator
                                 for (MaskingInfo ma : st.maskingInfos) {
                                     try {
                                         for (PredictionInfo pr : ma.predictions) {
+
+                                            // If the mutation is equivalent, don't consider it
+                                            if(pr.metrics.get("Equivalent") != null)
+                                                if(pr.metrics.get("Equivalent").equals("true")) {
+                                                    predictionNumber++;
+                                                    continue;
+                                                };
+
                                             String codeToCompile = content.substring(0, st.position.beginIndex)
                                                     + pr.statementAfter
                                                     + content.substring(st.position.endIndex + 1);
+
+                                            //Creation of folder number 0, 1, ...
+                                            Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
 
                                             if(Mutator.getInstance().getFileHandler().tryCompile(
                                                     f,
                                                     this.projectPath.toString(),
                                                     Path.of(f.pathName),
                                                     codeToCompile,
+                                                    folderNumber,
                                                     compilers)) {
-                                                //Creation of folder number 0, 1, ...
-                                                Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
+
                                                 Files.createDirectories(folderNumber);
                                                 // Creation of the file
                                                 // We want to create the file <=> the file can be compiled
@@ -241,6 +301,15 @@ public class Mutator
                                                 FileWriter newFile1 = new FileWriter(newFileName);
                                                 newFile1.write(codeToCompile);
                                                 newFile1.close();
+
+                                                // Mutant is alive
+                                                pr.metrics.put("Stillborn", "false");
+                                                pr.pathToOutput = folderNumber.toAbsolutePath().toString();
+                                            }
+                                            else
+                                            {
+                                                // Mutant is dead
+                                                pr.metrics.put("Stillborn", "true");
                                             }
                                             predictionNumber++;
                                         }
@@ -255,7 +324,8 @@ public class Mutator
                     }
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                System.out.println("Strange exception... " + e);
+                //throw new RuntimeException(e);
             }
         }
     }

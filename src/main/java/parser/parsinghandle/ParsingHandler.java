@@ -61,16 +61,16 @@ public abstract class ParsingHandler
      */
     protected abstract void setSettings();
 
-    public boolean tryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, ArrayList<Compiler> compilers) throws IOException, InterruptedException
+    public boolean tryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, Path pathToExport, ArrayList<Compiler> compilers) throws IOException, InterruptedException
     {
-        boolean canCompile = protectedTryCompile(fileInfo, projectRoot, originalFile, codeToCompile, compilers);
+        boolean canCompile = protectedTryCompile(fileInfo, projectRoot, originalFile, codeToCompile, pathToExport, compilers);
 
         if(canCompile) return true;
-        else if(nextHandler != null) return nextHandler.tryCompile(fileInfo, projectRoot, originalFile, codeToCompile, compilers);
+        else if(nextHandler != null) return nextHandler.tryCompile(fileInfo, projectRoot, originalFile, codeToCompile, pathToExport, compilers);
         else return false;
     }
 
-    protected boolean protectedTryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, ArrayList<Compiler> compilers) throws IOException, InterruptedException
+    protected boolean protectedTryCompile(FileInfo fileInfo, String projectRoot, Path originalFile, String codeToCompile, Path pathToExport, ArrayList<Compiler> compilers) throws IOException, InterruptedException
     {
         // Check the language
         if(!fileInfo.language.equals(this.lang.toString())) return false;
@@ -78,7 +78,7 @@ public abstract class ParsingHandler
         {
             if(c.getLanguage().equals(this.lang))
             {
-                return c.tryCompile(projectRoot, originalFile, codeToCompile);
+                return c.tryCompile(projectRoot, originalFile, codeToCompile, pathToExport);
             }
         }
         return false;

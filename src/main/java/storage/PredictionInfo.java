@@ -12,6 +12,8 @@ public class PredictionInfo extends AbstractInfo
 
     public String statementAfter = "";
 
+    public String pathToOutput = "";
+
     public HashMap<String, String> metrics = new HashMap<String, String>();
 
     @Override
@@ -20,6 +22,7 @@ public class PredictionInfo extends AbstractInfo
                 "tokenPredicted='" + tokenPredicted + '\'' +
                 ", statementBefore='" + statementBefore + '\'' +
                 ", statementAfter='" + statementAfter + '\'' +
+                ", pathToOutput='" + pathToOutput + '\'' +
                 ", metrics=" + metrics +
                 ", position=" + position +
                 '}';

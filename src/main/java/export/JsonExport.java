@@ -15,6 +15,7 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
+                + "\t\"type\": \"FileInfo\",\n"
                 + "\t\"filename\": \"" + fi.fileName + "\",\n"
                 + "\t\"pathname\": \"" + fi.pathName + "\",\n"
                 + "\t\"strategy\": \"" + fi.strategy + "\",\n"
@@ -48,6 +49,7 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
+                + "\t\"type\": \"ClassInfo\",\n"
                 + "\t\"classname\": \"" + cl.className + "\",\n";
 
         if(cl.position != null) res += "\t\"position\": " + cl.position.visit(this).replace("\t","\t\t");
@@ -78,6 +80,7 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
+                + "\t\"type\": \"MethodInfo\",\n"
                 + "\t\"methodname\": \"" + me.methodName + "\",\n"
                 + "\t\"declaration\": \"" + me.declaration + "\",\n";
 
@@ -108,6 +111,7 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
+                + "\t\"type\": \"StatementInfo\",\n"
                 + "\t\"statement\": \"" + st.statement.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n";
 
         if(st.position != null) res += "\t\"position\": " + st.position.visit(this).replace("\t","\t\t");
@@ -138,6 +142,7 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
+                + "\t\"type\": \"MaskingInfo\",\n"
                 + "\t\"maskingtype\": \"" + ma.maskingType + "\",\n";
 
         if(ma.position != null) res += "\t\"position\": " + ma.position.visit(this).replace("\t","\t\t");
@@ -168,24 +173,25 @@ public class JsonExport implements ExportVisitor
         String res = "";
 
         res += "{" + "\n"
-            + "\t\"tokenpredicted\": \"" + pr.tokenPredicted.replace("\"", "\\\"") + "\",\n"
-            + "\t\"statementbefore\": \"" + pr.statementBefore.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n"
-            + "\t\"statementafter\": \"" + pr.statementAfter.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n";
+                + "\t\"type\": \"PredictionInfo\",\n"
+                + "\t\"tokenpredicted\": \"" + pr.tokenPredicted.replace("\"", "\\\"") + "\",\n"
+                + "\t\"statementbefore\": \"" + pr.statementBefore.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n"
+                + "\t\"statementafter\": \"" + pr.statementAfter.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n"
+                + "\t\"pathtooutput\": \"" + pr.pathToOutput.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n";
 
         if(!pr.metrics.isEmpty())
         {
-            res += "\t\"metrics\": \n" + "\t[\n";
+            res += "\t\"metrics\": \n" + "\t{\n";
             int i = 0;
             for(Map.Entry<String, String> entry: pr.metrics.entrySet())
             {
-                res += "\t\t{\n";
-                res += "\t\t\t\"metric\": \"" + entry.getKey() + "\",\n";
-                res += "\t\t\t\"value\": \"" + entry.getValue() + "\"\n";
-                if(i < pr.metrics.size()-1) res += "\t\t},\n";
-                else res += "\t\t}\n";
+                //res += "\t\t{\n";
+                res += "\t\t\"" + entry.getKey() + "\": \"" + entry.getValue() + "\"";
+                if(i < pr.metrics.size()-1) res +=  ",\n";
+                else res += "\n";
                 i++;
             }
-            res += "\t],\n";
+            res += "\t},\n";
         }
 
         if(pr.position != null) res += "\t\"position\": " + pr.position.visit(this).replace("\t","\t\t");
@@ -200,6 +206,7 @@ public class JsonExport implements ExportVisitor
     {
         if(po == null) return "";
         return "{" + "\n"
+            + "\t\"type\": \"PositionInfo\",\n"
             + "\t\"beginindex\": \"" + po.beginIndex + "\",\n"
             + "\t\"endindex\": \"" + po.endIndex + "\",\n"
             + "\t\"beginline\": \"" + po.beginLine + "\",\n"
