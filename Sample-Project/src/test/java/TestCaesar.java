@@ -3,26 +3,24 @@ import cryptography.Vigenere;
 import exception.CryptographyException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runners.JUnit4;
 
 public class TestCaesar
 {
-    @Test
+    @Test(timeout=5000)
     public void testName()
     {
         Caesar caesar = new Caesar();
         Assert.assertEquals("Caesar", caesar.getName());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testDescription()
     {
         Caesar caesar = new Caesar();
         Assert.assertEquals("The description for the Caesar cipher.", caesar.getDescription());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testAlphabet()
     {
         Caesar caesar = new Caesar();
@@ -30,7 +28,7 @@ public class TestCaesar
         Assert.assertArrayEquals(new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}, caesar.getAlphabet());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testKey()
     {
         Caesar caesar = new Caesar();
@@ -71,7 +69,7 @@ public class TestCaesar
         } catch (CryptographyException e) {}
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testEncryptionDecryption()
     {
         Caesar caesar = new Caesar();

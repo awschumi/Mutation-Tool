@@ -2,29 +2,27 @@ import cryptography.Vigenere;
 import exception.CryptographyException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runners.JUnit4;
 
 /**
  * Class for testing Vigenere features
  */
 public class TestVigenere
 {
-    @Test
+    @Test(timeout=5000)
     public void testName()
     {
         Vigenere vigenere = new Vigenere();
         Assert.assertEquals("Vigenère", vigenere.getName());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testDescription()
     {
         Vigenere vigenere = new Vigenere();
         Assert.assertEquals("The Vigenère cipher is an encryption method similar to the Caesar cipher, except that every letter has a different shifting. It uses an alphabet, usually the latin alphabet, and a key consisting of a word of the alphabet.", vigenere.getDescription());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testAlphabet()
     {
         Vigenere vigenere = new Vigenere();
@@ -32,7 +30,7 @@ public class TestVigenere
         Assert.assertArrayEquals(new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}, vigenere.getAlphabet());
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testKey()
     {
         Vigenere vigenere = new Vigenere();
@@ -66,7 +64,7 @@ public class TestVigenere
         } catch (CryptographyException e) {}
     }
 
-    @Test
+    @Test(timeout=5000)
     public void testEncryptionDecryption()
     {
         Vigenere vigenere = new Vigenere();

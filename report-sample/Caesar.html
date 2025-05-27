@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    
+    <style type="text/css" media="all">
+      pre 
+      {
+        margin: 0;
+        white-space: pre-wrap;       /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      }
+
+      .main
+      {
+        margin:20px;
+      }
+    </style>
+    
+    <title>Test Report</title>
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="https://freesvg.org/img/accessories-text-editor.png" width="28"
+           alt="Logo" 
+           class="d-inline-block align-text-top" /> 
+           Test Report
+        </a>
+      </div>
+    </nav>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs bg-body-tertiary" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" data-bs-toggle="tab" href="#home" aria-selected="true" role="tab">Strategy 1</a>
+      </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane fade active show" id="home" role="tabpanel">
+        <div class="main">
+<br />
+<h1 class="text-center">Caesar.java</h1>
+     
+    <br />
+    <h2 class="">Code</h2>
+
+    <table class="table table-sm table-responsive table-hover">
+        <thead>
+        </thead>
+         
+        <tbody>
+<tr class="">
+<td>1</td>
+<td></td>
+<td><pre>package cryptography;</pre></td>
+</tr>
+<tr class="">
+<td>2</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>3</td>
+<td></td>
+<td><pre>import exception.CryptographyException;</pre></td>
+</tr>
+<tr class="">
+<td>4</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>5</td>
+<td></td>
+<td><pre>public class Caesar extends Vigenere</pre></td>
+</tr>
+<tr class="">
+<td>6</td>
+<td></td>
+<td><pre>{</pre></td>
+</tr>
+<tr class="">
+<td>7</td>
+<td></td>
+<td><pre>    public Caesar()</pre></td>
+</tr>
+<tr class="">
+<td>8</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="">
+<td>9</td>
+<td></td>
+<td><pre>        setName("Caesar");</pre></td>
+</tr>
+<tr class="">
+<td>10</td>
+<td></td>
+<td><pre>        setDescription("The description for the Caesar cipher.");</pre></td>
+</tr>
+<tr class="">
+<td>11</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>12</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>13</td>
+<td></td>
+<td><pre>    @Override</pre></td>
+</tr>
+<tr class="">
+<td>14</td>
+<td></td>
+<td><pre>    public void setKey(String key) throws CryptographyException</pre></td>
+</tr>
+<tr class="">
+<td>15</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-success">
+<td>16</td>
+<td></td>
+<td><pre>        if(key == null) throw new CryptographyException("The key is null");</pre></td>
+</tr>
+<tr class="table-danger">
+<td>17</td>
+<td></td>
+<td><pre>        if(key.length() > 1) throw new CryptographyException("The key must have a size of exactly 1 character ("+key.length()+" characters provided)");</pre></td>
+</tr>
+<tr class="">
+<td>18</td>
+<td></td>
+<td><pre>        super.setKey(key);</pre></td>
+</tr>
+<tr class="">
+<td>19</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>20</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>21</td>
+<td></td>
+<td><pre>    public void setKey(char key) throws CryptographyException</pre></td>
+</tr>
+<tr class="">
+<td>22</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="">
+<td>23</td>
+<td></td>
+<td><pre>        this.setKey(String.valueOf(key));</pre></td>
+</tr>
+<tr class="">
+<td>24</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>25</td>
+<td></td>
+<td><pre>}</pre></td>
+</tr>
+<tr class="">
+<td>26</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+     </tbody>
+ </table>
+ 
+ <br />
+ <h2 class="">Mutations</h2>
+ <table class="table table-sm table-responsive table-hover">
+ <thead>
+ </thead>
+  
+ <tbody>
+<tr class="table-success">
+<td>16</td>
+<td></td>
+<td><pre>Replaced <b>“key”</b> with <b>“this”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>16</td>
+<td></td>
+<td><pre>Replaced <b>“null”</b> with <b>“ ""”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>16</td>
+<td></td>
+<td><pre>Replaced <b>“null”</b> with <b>“ key”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>16</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ !=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ 0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ 2”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ 128”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ 64”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ !=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ <=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ ==”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“"The key must have a size of exactly 1 character ("+key.length()”</b> with <b>“key”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“" characters provided)"”</b> with <b>“":"”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“" characters provided)"”</b> with <b>“1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“key.length()”</b> with <b>“1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>17</td>
+<td></td>
+<td><pre>Replaced <b>“key.length()”</b> with <b>“key”</b> --> KILLED</pre></td>
+</tr>
+</tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation bar -->
+  </body>
+</html>

@@ -222,6 +222,11 @@ public class Mutator
         return mutateAll(Path.of(path));
     }
 
+    public ArrayList<FileInfo> mutateAll()
+    {
+        return mutateAll(this.projectPath);
+    }
+
     /**
      * Generate mutant files in the export path
      * @param fileInfos A list of file infos

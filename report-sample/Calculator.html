@@ -1,0 +1,1659 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    
+    <style type="text/css" media="all">
+      pre 
+      {
+        margin: 0;
+        white-space: pre-wrap;       /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      }
+
+      .main
+      {
+        margin:20px;
+      }
+    </style>
+    
+    <title>Test Report</title>
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="https://freesvg.org/img/accessories-text-editor.png" width="28"
+           alt="Logo" 
+           class="d-inline-block align-text-top" /> 
+           Test Report
+        </a>
+      </div>
+    </nav>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs bg-body-tertiary" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" data-bs-toggle="tab" href="#home" aria-selected="true" role="tab">Strategy 1</a>
+      </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+      <div class="tab-pane fade active show" id="home" role="tabpanel">
+        <div class="main">
+<br />
+<h1 class="text-center">Calculator.java</h1>
+     
+    <br />
+    <h2 class="">Code</h2>
+
+    <table class="table table-sm table-responsive table-hover">
+        <thead>
+        </thead>
+         
+        <tbody>
+<tr class="">
+<td>1</td>
+<td></td>
+<td><pre>package Calculator;</pre></td>
+</tr>
+<tr class="">
+<td>2</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>3</td>
+<td></td>
+<td><pre>public class Calculator</pre></td>
+</tr>
+<tr class="">
+<td>4</td>
+<td></td>
+<td><pre>{</pre></td>
+</tr>
+<tr class="">
+<td>5</td>
+<td></td>
+<td><pre>    public static final double EPS = 0.001;</pre></td>
+</tr>
+<tr class="">
+<td>6</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>7</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>8</td>
+<td></td>
+<td><pre>     * Computes the addition of a and b</pre></td>
+</tr>
+<tr class="">
+<td>9</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>10</td>
+<td></td>
+<td><pre>    public static double add(double a, double b)</pre></td>
+</tr>
+<tr class="">
+<td>11</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>        return a+b;</pre></td>
+</tr>
+<tr class="">
+<td>13</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>14</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>15</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>16</td>
+<td></td>
+<td><pre>     * Computes the subtraction of a and b</pre></td>
+</tr>
+<tr class="">
+<td>17</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>18</td>
+<td></td>
+<td><pre>    public static double sub(double a, double b)</pre></td>
+</tr>
+<tr class="">
+<td>19</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-success">
+<td>20</td>
+<td></td>
+<td><pre>        return a-b;</pre></td>
+</tr>
+<tr class="">
+<td>21</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>22</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>23</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>24</td>
+<td></td>
+<td><pre>     * Computes the multiplication of a and b</pre></td>
+</tr>
+<tr class="">
+<td>25</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>26</td>
+<td></td>
+<td><pre>    public static double mult(double a, double b)</pre></td>
+</tr>
+<tr class="">
+<td>27</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>        return a*b;</pre></td>
+</tr>
+<tr class="">
+<td>29</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>30</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>31</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>32</td>
+<td></td>
+<td><pre>     * Computes the division of a and b</pre></td>
+</tr>
+<tr class="">
+<td>33</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>34</td>
+<td></td>
+<td><pre>    public static double div(double a, double b) throws Exception</pre></td>
+</tr>
+<tr class="">
+<td>35</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>        if(b == 0) throw new Exception("You can't divide by 0 :(");</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>        return a/b;</pre></td>
+</tr>
+<tr class="">
+<td>38</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>39</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>40</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>41</td>
+<td></td>
+<td><pre>     * Computes a modulo b</pre></td>
+</tr>
+<tr class="">
+<td>42</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>43</td>
+<td></td>
+<td><pre>    public static int mod(int a, int b) throws Exception</pre></td>
+</tr>
+<tr class="">
+<td>44</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>45</td>
+<td></td>
+<td><pre>        if(b == 0) throw new Exception("You can't divide by 0 :(");</pre></td>
+</tr>
+<tr class="table-danger">
+<td>46</td>
+<td></td>
+<td><pre>        return a%b;</pre></td>
+</tr>
+<tr class="">
+<td>47</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>48</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>49</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>50</td>
+<td></td>
+<td><pre>     * Computes the absolute value of a</pre></td>
+</tr>
+<tr class="">
+<td>51</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>52</td>
+<td></td>
+<td><pre>    public static double abs(double a)</pre></td>
+</tr>
+<tr class="">
+<td>53</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>54</td>
+<td></td>
+<td><pre>        if(a >= 0) return a;</pre></td>
+</tr>
+<tr class="">
+<td>55</td>
+<td></td>
+<td><pre>        return -a;</pre></td>
+</tr>
+<tr class="">
+<td>56</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>57</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>58</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>59</td>
+<td></td>
+<td><pre>     * Computes the maximum between a and b</pre></td>
+</tr>
+<tr class="">
+<td>60</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>61</td>
+<td></td>
+<td><pre>    public static double max(double a, double b)</pre></td>
+</tr>
+<tr class="">
+<td>62</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>63</td>
+<td></td>
+<td><pre>        if(a >= b) return a;</pre></td>
+</tr>
+<tr class="">
+<td>64</td>
+<td></td>
+<td><pre>        return b;</pre></td>
+</tr>
+<tr class="">
+<td>65</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>66</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>67</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>68</td>
+<td></td>
+<td><pre>     * Computes the minimum between a and b</pre></td>
+</tr>
+<tr class="">
+<td>69</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>70</td>
+<td></td>
+<td><pre>    public static double min(double a, double b)</pre></td>
+</tr>
+<tr class="">
+<td>71</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>        if(a <= b) return a;</pre></td>
+</tr>
+<tr class="">
+<td>73</td>
+<td></td>
+<td><pre>        return b;</pre></td>
+</tr>
+<tr class="">
+<td>74</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>75</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>76</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>77</td>
+<td></td>
+<td><pre>     * Computes the square root of a with an approximation of ...</pre></td>
+</tr>
+<tr class="">
+<td>78</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>79</td>
+<td></td>
+<td><pre>    public static double sqrt(double a) throws Exception</pre></td>
+</tr>
+<tr class="">
+<td>80</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>        if(a < 0) throw new Exception("Can't compute a negative root :(");</pre></td>
+</tr>
+<tr class="table-danger">
+<td>82</td>
+<td></td>
+<td><pre>        if(a == 0) return 0;</pre></td>
+</tr>
+<tr class="">
+<td>83</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>84</td>
+<td></td>
+<td><pre>        double xn = 2; // It could be any positive real number but 0</pre></td>
+</tr>
+<tr class="">
+<td>85</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="table-danger">
+<td>86</td>
+<td></td>
+<td><pre>        for(int i = 0; i < 25; i++)</pre></td>
+</tr>
+<tr class="">
+<td>87</td>
+<td></td>
+<td><pre>        {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>88</td>
+<td></td>
+<td><pre>            xn = 0.5 * (xn + (a/xn)); // 0.5 * ...</pre></td>
+</tr>
+<tr class="">
+<td>89</td>
+<td></td>
+<td><pre>        }</pre></td>
+</tr>
+<tr class="">
+<td>90</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>91</td>
+<td></td>
+<td><pre>        return xn;</pre></td>
+</tr>
+<tr class="">
+<td>92</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>93</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>94</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>95</td>
+<td></td>
+<td><pre>     * Computes the exponential of a with an approximation of ...</pre></td>
+</tr>
+<tr class="">
+<td>96</td>
+<td></td>
+<td><pre>     * Reminder: exp(x) = 1 + x + x^2/2! + x^3/3! + x^4/4! + ...</pre></td>
+</tr>
+<tr class="">
+<td>97</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>98</td>
+<td></td>
+<td><pre>    public static double exp(double a)</pre></td>
+</tr>
+<tr class="">
+<td>99</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="">
+<td>100</td>
+<td></td>
+<td><pre>        double res = 1;</pre></td>
+</tr>
+<tr class="">
+<td>101</td>
+<td></td>
+<td><pre>        double numerator = a;</pre></td>
+</tr>
+<tr class="">
+<td>102</td>
+<td></td>
+<td><pre>        double denominator = 1;</pre></td>
+</tr>
+<tr class="">
+<td>103</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="table-danger">
+<td>104</td>
+<td></td>
+<td><pre>        for(int i = 1; i < 10; i++)</pre></td>
+</tr>
+<tr class="">
+<td>105</td>
+<td></td>
+<td><pre>        {</pre></td>
+</tr>
+<tr class="table-danger">
+<td>106</td>
+<td></td>
+<td><pre>            res += numerator/denominator;</pre></td>
+</tr>
+<tr class="">
+<td>107</td>
+<td></td>
+<td><pre>            numerator *= a;</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>            denominator *= i+1;</pre></td>
+</tr>
+<tr class="">
+<td>109</td>
+<td></td>
+<td><pre>        }</pre></td>
+</tr>
+<tr class="">
+<td>110</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>111</td>
+<td></td>
+<td><pre>        return res;</pre></td>
+</tr>
+<tr class="">
+<td>112</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>113</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+<tr class="">
+<td>114</td>
+<td></td>
+<td><pre>    /*</pre></td>
+</tr>
+<tr class="">
+<td>115</td>
+<td></td>
+<td><pre>     * Computes the number x pow n, where x is a real number and n any positive or negative</pre></td>
+</tr>
+<tr class="">
+<td>116</td>
+<td></td>
+<td><pre>     * Recursive function</pre></td>
+</tr>
+<tr class="">
+<td>117</td>
+<td></td>
+<td><pre>     * Particular case: 0^0 := 1</pre></td>
+</tr>
+<tr class="">
+<td>118</td>
+<td></td>
+<td><pre>     */</pre></td>
+</tr>
+<tr class="">
+<td>119</td>
+<td></td>
+<td><pre>    public static double pow(double x, int n)</pre></td>
+</tr>
+<tr class="">
+<td>120</td>
+<td></td>
+<td><pre>    {</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>        if(n == 0) return 1;</pre></td>
+</tr>
+<tr class="table-danger">
+<td>122</td>
+<td></td>
+<td><pre>        if(n > 0) return x * pow(x,n-1);</pre></td>
+</tr>
+<tr class="">
+<td>123</td>
+<td></td>
+<td><pre>        // Here is a comment</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>        return 1 / (pow(x, -n));</pre></td>
+</tr>
+<tr class="">
+<td>125</td>
+<td></td>
+<td><pre>    }</pre></td>
+</tr>
+<tr class="">
+<td>126</td>
+<td></td>
+<td><pre>}</pre></td>
+</tr>
+<tr class="">
+<td>127</td>
+<td></td>
+<td><pre></pre></td>
+</tr>
+     </tbody>
+ </table>
+ 
+ <br />
+ <h2 class="">Mutations</h2>
+ <table class="table table-sm table-responsive table-hover">
+ <thead>
+ </thead>
+  
+ <tbody>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ b”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>12</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“/”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>20</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>20</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>20</td>
+<td></td>
+<td><pre>Replaced <b>“-”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>20</td>
+<td></td>
+<td><pre>Replaced <b>“-”</b> with <b>“/”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ b”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>28</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“/”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“a”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ a”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ b”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ !=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>36</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ >”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ b”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>37</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“%”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ b”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ !=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ >”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>45</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ b”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“ 0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“2”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“%”</b> with <b>“/”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“%”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“%”</b> with <b>“^”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>46</td>
+<td></td>
+<td><pre>Replaced <b>“%”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ ==”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ >”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>54</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ <=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“b”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ 0”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ 1”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ <=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ >”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>63</td>
+<td></td>
+<td><pre>Replaced <b>“>=”</b> with <b>“ ==”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“0”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ a”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ 0”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“b”</b> with <b>“ 1”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“<=”</b> with <b>“ >=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“<=”</b> with <b>“ <”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“<=”</b> with <b>“ >”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>72</td>
+<td></td>
+<td><pre>Replaced <b>“<=”</b> with <b>“ ==”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“0”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 2”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ >”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ ==”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>81</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ >=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>82</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>82</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>82</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>82</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>82</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ >”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“i”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“25”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“25”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“25”</b> with <b>“ 10”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“25”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ !=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>86</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ >”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ /”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ +”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ -”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(a/xn)”</b> with <b>“ i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(a/xn)”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(a/xn)”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(a/xn)”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(a/xn)”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“ /”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“ *”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“ -”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“ =”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“2”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“a”</b> with <b>“0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“xn”</b> with <b>“25”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“0.5”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“0.5”</b> with <b>“ i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“0.5”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“0.5”</b> with <b>“ 5”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“0.5”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(xn + (a/xn))”</b> with <b>“ i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(xn + (a/xn))”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>88</td>
+<td></td>
+<td><pre>Replaced <b>“(xn + (a/xn))”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“i”</b> with <b>“ res”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“10”</b> with <b>“ 25”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“10”</b> with <b>“ 5”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“10”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“10”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ <=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ >=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>104</td>
+<td></td>
+<td><pre>Replaced <b>“<”</b> with <b>“ >”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“numerator”</b> with <b>“ i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“numerator”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“numerator”</b> with <b>“ res”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“numerator”</b> with <b>“ a”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“numerator”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“denominator”</b> with <b>“i”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“denominator”</b> with <b>“a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“denominator”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“denominator”</b> with <b>“10”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“ *”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>106</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“i”</b> with <b>“ a”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“i”</b> with <b>“ res”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“res”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“10”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“-”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“/”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>108</td>
+<td></td>
+<td><pre>Replaced <b>“+”</b> with <b>“*”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“n”</b> with <b>“x”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“n”</b> with <b>“1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>121</td>
+<td></td>
+<td><pre>Replaced <b>“==”</b> with <b>“ <=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“n”</b> with <b>“x”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“0”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ !=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ <”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-danger">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ >=”</b> --> SURVIVED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“>”</b> with <b>“ <=”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“x”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“x”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“x”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“x”</b> with <b>“ 3”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“pow(x,n-1)”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“pow(x,n-1)”</b> with <b>“ 1”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“pow(x,n-1)”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“pow(x,n-1)”</b> with <b>“n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ /”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ +”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ -”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“*”</b> with <b>“ %”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>122</td>
+<td></td>
+<td><pre>Replaced <b>“-”</b> with <b>“+”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ x”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“1”</b> with <b>“ 0”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“(pow(x, -n))”</b> with <b>“ n”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“(pow(x, -n))”</b> with <b>“ x”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“(pow(x, -n))”</b> with <b>“ 2”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“ +”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“ *”</b> --> KILLED</pre></td>
+</tr>
+<tr class="table-success">
+<td>124</td>
+<td></td>
+<td><pre>Replaced <b>“/”</b> with <b>“ -”</b> --> KILLED</pre></td>
+</tr>
+</tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation bar -->
+  </body>
+</html>

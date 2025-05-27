@@ -1,7 +1,9 @@
 package export;
 
+import org.json.JSONObject;
 import storage.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -169,50 +171,49 @@ public class JsonExport implements ExportVisitor
 
     @Override
     public String visitPredictionInfo(PredictionInfo pr) {
-        if(pr == null) return "";
-        String res = "";
+        return this.visitPredictionInfoJson(pr).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"PredictionInfo\",\n"
-                + "\t\"tokenpredicted\": \"" + pr.tokenPredicted.replace("\"", "\\\"") + "\",\n"
-                + "\t\"statementbefore\": \"" + pr.statementBefore.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n"
-                + "\t\"statementafter\": \"" + pr.statementAfter.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n"
-                + "\t\"pathtooutput\": \"" + pr.pathToOutput.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n";
+    public JSONObject visitPredictionInfoJson(PredictionInfo pr)
+    {
+        if(pr == null) return new JSONObject();
 
-        if(!pr.metrics.isEmpty())
-        {
-            res += "\t\"metrics\": \n" + "\t{\n";
-            int i = 0;
-            for(Map.Entry<String, String> entry: pr.metrics.entrySet())
-            {
-                //res += "\t\t{\n";
-                res += "\t\t\"" + entry.getKey() + "\": \"" + entry.getValue() + "\"";
-                if(i < pr.metrics.size()-1) res +=  ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "\t},\n";
-        }
+        JSONObject export = new JSONObject();
 
-        if(pr.position != null) res += "\t\"position\": " + pr.position.visit(this).replace("\t","\t\t");
+        export.put("type", "PredictionInfo");
+        export.put("tokenpredicted", pr.tokenPredicted);
+        export.put("statementbefore", pr.statementBefore);
+        export.put("statementafter", pr.statementAfter);
+        export.put("pathtooutput", pr.pathToOutput);
 
-        res += "\n}";
+        JSONObject metrics = new JSONObject();
+        for(Map.Entry<String, String> entry: pr.metrics.entrySet())
+            metrics.put(entry.getKey(), entry.getValue());
+        export.put("metrics", metrics);
+        export.put("position", this.visitPositionInfoJson(pr.position));
 
-        return res;
+        return export;
     }
 
     @Override
     public String visitPositionInfo(PositionInfo po)
     {
-        if(po == null) return "";
-        return "{" + "\n"
-            + "\t\"type\": \"PositionInfo\",\n"
-            + "\t\"beginindex\": \"" + po.beginIndex + "\",\n"
-            + "\t\"endindex\": \"" + po.endIndex + "\",\n"
-            + "\t\"beginline\": \"" + po.beginLine + "\",\n"
-            + "\t\"begincolumn\": \"" + po.beginColumn + "\",\n"
-            + "\t\"endline\": \"" + po.endLine + "\",\n"
-            + "\t\"endcolumn\": \"" + po.endColumn + "\"\n"
-            + "}";
+        return this.visitPositionInfoJson(po).toString();
+    }
+
+    public JSONObject visitPositionInfoJson(PositionInfo po)
+    {
+        if (po == null) return new JSONObject();
+
+        HashMap<String, String> position = new HashMap<>();
+        position.put("type", "PositionInfo");
+        position.put("beginindex", String.valueOf(po.beginIndex));
+        position.put("endindex", String.valueOf(po.endIndex));
+        position.put("beginline", String.valueOf(po.beginLine));
+        position.put("begincolumn", String.valueOf(po.beginColumn));
+        position.put("endline", String.valueOf(po.endLine));
+        position.put("endcolumn", String.valueOf(po.endColumn));
+
+        return new JSONObject(position);
     }
 }

@@ -197,61 +197,67 @@ public class JavaTesting extends AbstractTesting
                                     try {
                                         // 2. For every test class, test with the mutated file
                                         File folder = Path.of(pr.pathToOutput, "compiled-classes").toAbsolutePath().toFile();
+                                        System.out.println("****** " + folder);
                                         if (!folder.exists() || !folder.isDirectory()) {
-                                            throw new IllegalArgumentException("Path is not a directory!");
+                                            // This may mean that the mutation prediction could not compile (stillborn)
+                                            // throw new IllegalArgumentException("Path is not a directory!");
                                         }
-                                        URL[] urls = {folder.toURI().toURL()};
-                                        try (URLClassLoader classLoader = new URLClassLoader(urls)) {
-                                            // Scan for .class files
-                                            List<File> classFiles = Files.walk(folder.toPath())
-                                                    .filter(f -> f.toString().endsWith(".class"))
-                                                    .map(Path::toFile)
-                                                    .toList();
+                                        else {
+                                            URL[] urls = {folder.toURI().toURL()};
+                                            try (URLClassLoader classLoader = new URLClassLoader(urls)) {
+                                                // Scan for .class files
+                                                List<File> classFiles = Files.walk(folder.toPath())
+                                                        .filter(f -> f.toString().endsWith(".class"))
+                                                        .map(Path::toFile)
+                                                        .toList();
 
-                                            List<Class<?>> testClasses = new ArrayList<>();
-                                            // Iterate over class files
-                                            for (File classFile : classFiles) {
-                                                String className = getClassNameFromFile(folder, classFile);
-                                                Class<?> clazz = classLoader.loadClass(className);
-                                                for(Path potentialGoodTestClass: goodTestClasses)
-                                                {
-                                                    String onlyName = FilenameUtils.removeExtension(potentialGoodTestClass.toFile().getName());
-                                                    if(className.contains(onlyName))
-                                                    {
-                                                        testClasses.add(clazz);
-                                                        break;
+                                                List<Class<?>> testClasses = new ArrayList<>();
+                                                // Iterate over class files
+                                                for (File classFile : classFiles) {
+                                                    String className = getClassNameFromFile(folder, classFile);
+                                                    Class<?> clazz = classLoader.loadClass(className);
+                                                    for (Path potentialGoodTestClass : goodTestClasses) {
+                                                        String onlyName = FilenameUtils.removeExtension(potentialGoodTestClass.toFile().getName());
+                                                        if (className.contains(onlyName)) {
+                                                            testClasses.add(clazz);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                Class<?>[] testClassesArray = new Class<?>[testClasses.size()];
+                                                for (int i = 0; i < testClassesArray.length; i++)
+                                                    testClassesArray[i] = testClasses.get(i);
+
+                                                Result result = JUnitCore.runClasses(testClassesArray);
+                                                // If 0 errors, this means that the test has not detected
+                                                // the mutation
+                                                if (result.wasSuccessful()) {
+                                                    pr.metrics.put("killed", "false");
+                                                    pr.metrics.put("survived", "true");
+
+                                                    System.out.println(folder + " : mutation survived :(");
+                                                } else {
+                                                    pr.metrics.put("killed", "true");
+                                                    pr.metrics.put("survived", "false");
+                                                    // Put the list of every failed tests
+
+                                                    System.out.println(folder + " mutation killed :)");
+                                                    for (Failure failure : result.getFailures()) {
+                                                        System.out.println("\t\tProblem in "
+                                                                + failure.getDescription().getClassName()
+                                                                + " (" + failure.getTestHeader() + ") "
+                                                                + ": " + failure.getMessage());
                                                     }
                                                 }
                                             }
-                                            Class<?>[] testClassesArray = new Class<?>[testClasses.size()];
-                                            for(int i = 0; i < testClassesArray.length; i++)
-                                                testClassesArray[i] = testClasses.get(i);
-
-                                            Result result = JUnitCore.runClasses(testClassesArray);
-                                            if(result.wasSuccessful())
-                                            {
-                                                pr.metrics.put("killed", "true");
-                                                pr.metrics.put("survived", "false");
-
-                                                System.out.println(folder + " worked :)");
-                                            }
-                                            else
-                                            {
-                                                pr.metrics.put("killed", "false");
-                                                pr.metrics.put("survived", "true");
-                                                // Put the list of every failed tests
-
-                                                System.out.println(folder + " failed :(");
-                                                for (Failure failure : result.getFailures()) {
-                                                    System.out.println("\t\tProblem in "
-                                                            + failure.getDescription().getClassName()
-                                                            + " (" +failure.getTestHeader()+ ") "
-                                                            + ": " + failure.getMessage());
-                                                }
+                                            catch (Exception e){
+                                                throw new RuntimeException(e);
                                             }
                                         }
 
-                                    } catch (Exception e) {}
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             }
                         }
@@ -261,7 +267,7 @@ public class JavaTesting extends AbstractTesting
         }
         catch (Exception e)
         {
-
+            throw new RuntimeException(e);
         }
     }
 
