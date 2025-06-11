@@ -109,8 +109,8 @@ public abstract class ParsingHandler
                 for(MaskParser parser: parsers) {
                     if (parser.getLanguage().equals(lang)) {
                         try {
-                            return parser.generateVariants(Files.readString(file.toPath()), true);
-                        } catch (IOException e) {
+                            return parser.generateVariants(file, true);
+                        } catch (Exception e) {
                             return null;
                         }
                     }

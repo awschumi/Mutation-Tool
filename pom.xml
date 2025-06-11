@@ -26,7 +26,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>2.0.7</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/ai.djl.huggingface/tokenizers -->
@@ -49,6 +48,23 @@
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-core</artifactId>
             <version>3.26.4</version>
+        </dependency>
+
+        <!-- Java Business Locations -->
+        <!-- https://github.com/Ahmedfir/java-business-locations -->
+        <dependency>
+            <groupId>com.github.javabusinesslocs</groupId>
+            <artifactId>javabusinesslocs</artifactId>
+            <scope>system</scope>
+            <version>1.2.2</version>
+            <systemPath>${basedir}/jars/javabusinesslocs-1.2.2-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <!-- Spoon, used by Java Business Locations -->
+        <dependency>
+            <groupId>fr.inria.gforge.spoon</groupId>
+            <artifactId>spoon-core</artifactId>
+            <version>10.0.0</version>
         </dependency>
 
         <!-- C++ Parsing -->

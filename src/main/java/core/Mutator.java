@@ -177,6 +177,7 @@ public class Mutator
         ArrayList<FileInfo> fileInfos = new ArrayList<>();
         try {
             // List of all java test classes
+            // TODO must be refactored somewhere else and not hard coded
             List<Path> allPaths = Files.walk(this.testsPath)
                     .filter(p -> p.toString().endsWith(".java"))
                     .collect(Collectors.toList());

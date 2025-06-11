@@ -5,6 +5,7 @@ import storage.ClassInfo;
 import storage.MaskingInfo;
 import strategy.StrategyFillMask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,8 @@ public abstract class MaskParser
     {
         return this.language;
     }
+
+    public abstract ArrayList<ClassInfo> generateVariants(File fileCode, boolean toMask);
 
     /*
      * For a same code, return the list of the code with different masks (unary, binary, boolean)
@@ -76,5 +79,41 @@ public abstract class MaskParser
 
         idx += (column - 1);
         return idx;
+    }
+
+    /**
+     * e.g. "1st white space" --> 0
+     *      "          white space" --> 10
+     * @param
+     * @return
+     */
+    public static int firstNoneEmptyIndex(String s)
+    {
+        if(s == null) return -1;
+        char[] characters = s.toCharArray();
+        boolean lastWhitespace = false;
+        for(int i = 0; i < s.length(); i++){
+            if(Character.isWhitespace(characters[i])){
+                lastWhitespace = true;
+            } else if(lastWhitespace){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int lastNoneEmptyIndex(String s)
+    {
+        if(s == null) return -1;
+        char[] characters = s.toCharArray();
+        boolean lastWhitespace = false;
+        for(int i = s.length()-1; i >= 0; i--){
+            if(Character.isWhitespace(characters[i])){
+                lastWhitespace = true;
+            } else if(lastWhitespace){
+                return i;
+            }
+        }
+        return -1;
     }
 }

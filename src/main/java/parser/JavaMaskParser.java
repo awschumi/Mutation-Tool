@@ -17,6 +17,8 @@ import core.MaskParser;
 import storage.*;
 import strategy.StrategyFillMask;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,19 @@ public class JavaMaskParser extends MaskParser
     public JavaMaskParser(StrategyFillMask strat)
     {
         super(strat);
+    }
+
+    @Override
+    public ArrayList<ClassInfo> generateVariants(File fileCode, boolean toMask)
+    {
+        try
+        {
+            return generateVariants(Files.readString(fileCode.toPath().toAbsolutePath()), toMask);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     /*

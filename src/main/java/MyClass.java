@@ -1,11 +1,18 @@
+import com.google.gson.Gson;
 import compilation.Compiler;
 import compilation.JavaTryCompiler;
+import core.MaskParser;
 import core.Mutator;
+import edu.lu.uni.serval.javabusinesslocs.cli.CliRequest;
+import edu.lu.uni.serval.javabusinesslocs.locator.LocationsCollector;
+import edu.lu.uni.serval.javabusinesslocs.output.*;
+import edu.lu.uni.serval.javabusinesslocs.utils.GsonHolder;
 import export.HtmlExport;
 import export.JsonExport;
 import imports.JsonImport;
 import org.json.JSONObject;
 import parser.CppMaskParser;
+import parser.JavaFileBusinessLocationsParser;
 import parser.JavaMaskParser;
 import storage.*;
 import strategy.StrategyFillMask;
@@ -18,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
+import edu.lu.uni.serval.javabusinesslocs.*;
 
 public class MyClass
 {
@@ -40,8 +48,8 @@ public class MyClass
                 .setThreadsNumber(8);
 
         ArrayList<FileInfo> results;
-        boolean loadFiles = true;
-        boolean compile = false;
+        boolean loadFiles = false;
+        boolean compile = true;
 
         if(!loadFiles)
         {
@@ -106,6 +114,26 @@ public class MyClass
                 throw new RuntimeException(e);
             }
         }
+
+        String[] arguments = {
+                "-in=Sample-Project/src/main/java/calculator/Calculator.java"
+        };
+
+        CliRequest request = CliRequest.parseArgs(arguments);
+        System.out.println(request);
+        LocationsCollector collector = request.start();
+
+        Gson gson = GsonHolder.getGson();
+
+        JavaFileBusinessLocationsParser javaFileBusinessLocationsParser = new JavaFileBusinessLocationsParser();
+        ArrayList<ClassInfo> classes = javaFileBusinessLocationsParser.generateVariants(Path.of("Sample-Project/src/main/java/calculator/Calculator.java").toFile(), true);
+        System.out.println(classes);
+        FileInfo f = new FileInfo();
+        f.language = "Java";
+        f.classes = classes;
+
+        JsonExport jsonExport = new JsonExport();
+        System.out.println(f.visit(jsonExport));
 
         mutator.getSharedPool().shutdown();
     }

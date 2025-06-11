@@ -5,6 +5,8 @@ import com.github.javaparser.Range;
 import core.MaskParser;
 import storage.*;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,18 @@ public class CppMaskParser extends MaskParser
     }
 
     public CppMaskParser() { this.language = core.Language.CPP; }
+
+    @Override
+    public ArrayList<ClassInfo> generateVariants(File fileCode, boolean toMask) {
+        try
+        {
+            return generateVariants(Files.readString(fileCode.toPath().toAbsolutePath()), toMask);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
 
     /*
      * Extracts the position from an expression
