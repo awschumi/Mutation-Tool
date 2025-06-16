@@ -119,42 +119,39 @@ public class HtmlExport
 
                 // <line number, is line killed>
                 HashMap<Integer, Boolean> isLineKilled = new HashMap<>();
+
                 // Browse every prediction
-                for (ClassInfo cl : fileInfo.classes) {
-                    for (MethodInfo me : cl.methods) {
-                        for (StatementInfo st : me.statements) {
-                            for (MaskingInfo ma : st.maskingInfos) {
-                                for (PredictionInfo pr : ma.predictions) {
-                                    // Get the lines
-                                    for(int i = ma.position.beginLine; i <= ma.position.endLine; i++)
-                                    {
-                                        // The mutation has been executed
-                                        if(pr.metrics.get("killed") != null
-                                        || pr.metrics.get("survived") != null) {
-                                            // Line already counted
-                                            if (isLineKilled.get(i) != null) {
-                                                if (pr.metrics.get("killed").equals("false"))
-                                                    isLineKilled.put(i, false);
-                                            } else {
-                                                if (pr.metrics.get("killed").equals("true"))
-                                                    isLineKilled.put(i, true);
-                                                else isLineKilled.put(i, false);
-                                            }
+                for(AbstractInfo ab: fileInfo.getSpecificChildren(AbstractInfo.Info.PREDICTION_INFO))
+                {
+                    PredictionInfo pr = (PredictionInfo) ab;
 
-                                            // If the line is not registered in the map yet
-                                            if(mutationsInfo.get(i) == null) {
-                                                mutationsInfo.put(i, new ArrayList<>());
-                                            }
-                                            
-                                            mutationsInfo.get(i).add("Replaced <b>“" + code.substring(ma.position.beginIndex, ma.position.endIndex+1) + "”</b> with <b>“" + pr.tokenPredicted + "”</b> --> "
-                                            + (pr.metrics.get("killed").equals("true") ? "KILLED":"SURVIVED"));
-
-                                        }
-                                    }
-                                }
+                    // Get the lines
+                    for(int i = ((MutationInfo)pr.parent).position.beginLine; i <= ((MutationInfo)pr.parent).position.endLine; i++)
+                    {
+                        // The mutation has been executed
+                        if(pr.metrics.get("killed") != null
+                                || pr.metrics.get("survived") != null) {
+                            // Line already counted
+                            if (isLineKilled.get(i) != null) {
+                                if (pr.metrics.get("killed").equals("false"))
+                                    isLineKilled.put(i, false);
+                            } else {
+                                if (pr.metrics.get("killed").equals("true"))
+                                    isLineKilled.put(i, true);
+                                else isLineKilled.put(i, false);
                             }
+
+                            // If the line is not registered in the map yet
+                            if(mutationsInfo.get(i) == null) {
+                                mutationsInfo.put(i, new ArrayList<>());
+                            }
+
+                            mutationsInfo.get(i).add("Replaced <b>“" + code.substring(((MutationInfo)pr.parent).position.beginIndex, ((MutationInfo)pr.parent).position.endIndex+1) + "”</b> with <b>“" + pr.tokenPredicted + "”</b> --> "
+                                    + (pr.metrics.get("killed").equals("true") ? "KILLED":"SURVIVED"));
+
                         }
                     }
+
                 }
 
                 System.out.println(mutationsInfo);

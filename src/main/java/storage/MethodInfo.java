@@ -2,44 +2,35 @@ package storage;
 
 import export.ExportVisitor;
 
-import java.util.ArrayList;
 
-/*
- * This class provides infos about methods for the mutation
- */
 public class MethodInfo extends AbstractInfo
 {
     // The method name, e.g: "add"
     public String methodName = "";
 
-    // The method declaration, e.g: "double add(double,double)"
-    public String declaration = "";
+    // The method signature, e.g: "double add(double,double)"
+    public String signature = "";
 
-    // The info about the statements of the class
-    public ArrayList<StatementInfo> statements = new ArrayList<StatementInfo>();
+    public PositionInfo position = new PositionInfo();
 
-    public void setMethodName(String methodName)
+    public MethodInfo()
     {
-        this.methodName = methodName;
+        this.info = Info.METHOD_INFO;
     }
 
-    public void setDeclaration(String declaration)
+    public MethodInfo(AbstractInfo parent)
     {
-        this.declaration = declaration;
-    }
-
-    public void addStatement(StatementInfo statementInfo)
-    {
-        statements.add(statementInfo);
+        super(parent);
+        this.info = Info.METHOD_INFO;
     }
 
     @Override
     public String toString() {
         return "MethodInfo{" +
-                "methodName='" + methodName + '\'' +
-                ", declaration='" + declaration + '\'' +
-                ", statements=" + statements +
+                "children=" + children +
                 ", position=" + position +
+                ", signature='" + signature + '\'' +
+                ", methodName='" + methodName + '\'' +
                 '}';
     }
 

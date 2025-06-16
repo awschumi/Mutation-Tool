@@ -4,8 +4,6 @@ import ai.djl.huggingface.tokenizers.Encoding;
 import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import ai.onnxruntime.*;
 import core.*;
-import export.JsonExport;
-import parser.parsinghandle.ParsingHandler;
 import storage.*;
 
 import java.io.File;
@@ -185,7 +183,6 @@ public class StrategyFillMask extends Strategy
         fileInfo.fileName = fileToMutate.getName();
         fileInfo.pathName = fileToMutate.getAbsolutePath();
         fileInfo.language = "Java";
-        fileInfo.strategy = this.getClass().getName();
 
         try
         {
@@ -198,6 +195,7 @@ public class StrategyFillMask extends Strategy
             ArrayList<ClassInfo> classes = Mutator.getInstance().getFileHandler().generateVariants(fileToMutate, Mutator.getInstance().getParsers());
             //System.out.println("MUTATING " + fileToMutate.getName() + ": " + classes);
             if(classes == null) return null;
+            fileInfo.children.addAll(classes);
 
             // Only computed once for the same file
             // After generating variants to be sure that it's a valid file
@@ -208,129 +206,252 @@ public class StrategyFillMask extends Strategy
 
             // Browse every mask info to generate the whole code masked
             // 1. Generate pre-threads
-            for(ClassInfo cl: classes)
+            for(AbstractInfo ab: fileInfo.getSpecificChildren(AbstractInfo.Info.MUTATION_INFO))
             {
-                for(MethodInfo me: cl.methods)
-                {
-                    for(StatementInfo st: me.statements)
-                    {
-                        for(MaskingInfo ma: st.maskingInfos)
-                        {
-                            ObjectForThread o = new ObjectForThread(this)
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    //System.out.println("    <Thread number " + this.getName() + " running>");
-                                    String toMutate =
-                                            codeToMutate.substring(0,ma.position.beginIndex)
-                                                    + mask
-                                                    + codeToMutate.substring(ma.position.endIndex+1);
-                                    //System.out.println("    <break-4>");
-                                    // Center the mask
-                                    String toMutateCenter = centerTheMask(toMutate);
+                MutationInfo mu = (MutationInfo) ab;
 
-                                    //System.out.println("    <break-3>");
-                                    Encoding encoding = tokenizer.encode(toMutateCenter);
-                                    //System.out.println("    <break-2>");
-                                    long[] inputIds = encoding.getIds();
-                                    long[] attentionMask = encoding.getAttentionMask();
-                                    long[] typeIds = encoding.getTypeIds(); // Add for Bert
+                ObjectForThread o = new ObjectForThread(this)
+                {
+                    @Override
+                    public void run()
+                    {
+                        //System.out.println("    <Thread number " + this.getName() + " running>");
+                        String toMutate =
+                                codeToMutate.substring(0,mu.position.beginIndex)
+                                        + mask
+                                        + codeToMutate.substring(mu.position.endIndex+1);
+                        //System.out.println("    <break-4>");
+                        // Center the mask
+                        String toMutateCenter = centerTheMask(toMutate);
+
+                        //System.out.println("    <break-3>");
+                        Encoding encoding = tokenizer.encode(toMutateCenter);
+                        //System.out.println("    <break-2>");
+                        long[] inputIds = encoding.getIds();
+                        long[] attentionMask = encoding.getAttentionMask();
+                        long[] typeIds = encoding.getTypeIds(); // Add for Bert
 //                                    System.out.println("inputIds size: " + inputIds.length);
 //                                    System.out.println("attentionMask size: " + attentionMask.length);
 //                                    System.out.println("typeIds size: " + typeIds.length);
-                                    //System.out.println("    <break-1>");
-                                    // Determining the mask index
-                                    int maskIndex = 0;
-                                    for (String s : encoding.getTokens()) {
-                                        if (s.trim().equals(((StrategyFillMask)object).mask)) break;
-                                        maskIndex++;
-                                    }
-                                    //System.out.println("    <break0>");
-                                    try {
-                                        // 2) Prepare inputs (batch size = 1)
-                                        OnnxTensor idsTensor = OnnxTensor.createTensor(env, new long[][]{inputIds});
-                                        OnnxTensor maskTensor = OnnxTensor.createTensor(env, new long[][]{attentionMask});
-                                        OnnxTensor typeTensor = OnnxTensor.createTensor(env, new long[][]{typeIds});
-                                        Map<String, OnnxTensor> inputs = Map.of(
-                                                "input_ids", idsTensor,
-                                                "attention_mask", maskTensor
-                                                //"token_type_ids", typeTensor // Add for Bert
-                                        );
+                        //System.out.println("    <break-1>");
+                        // Determining the mask index
+                        int maskIndex = 0;
+                        for (String s : encoding.getTokens()) {
+                            if (s.trim().equals(((StrategyFillMask)object).mask)) break;
+                            maskIndex++;
+                        }
+                        //System.out.println("    <break0>");
+                        try {
+                            // 2) Prepare inputs (batch size = 1)
+                            OnnxTensor idsTensor = OnnxTensor.createTensor(env, new long[][]{inputIds});
+                            OnnxTensor maskTensor = OnnxTensor.createTensor(env, new long[][]{attentionMask});
+                            OnnxTensor typeTensor = OnnxTensor.createTensor(env, new long[][]{typeIds});
+                            Map<String, OnnxTensor> inputs = Map.of(
+                                    "input_ids", idsTensor,
+                                    "attention_mask", maskTensor
+                                    //"token_type_ids", typeTensor // Add for Bert
+                            );
 
-                                        long start = System.currentTimeMillis();
-                                        OrtSession.Result result = session.run(inputs);
-                                        long end = System.currentTimeMillis();
-                                        System.out.println("    Time to run: " + (end-start) + "ms");
-                                        // The first (and only) output is [batch, seq_len, vocab_size]
-                                        //System.out.println("WE ARE AFTER THE RUN");
-                                        float[][][] logits = (float[][][]) result.get(0).getValue();
-                                        float[] maskLogits = logits[0][maskIndex];
+                            long start = System.currentTimeMillis();
+                            OrtSession.Result result = session.run(inputs);
+                            long end = System.currentTimeMillis();
+                            System.out.println("    Time to run: " + (end-start) + "ms");
+                            // The first (and only) output is [batch, seq_len, vocab_size]
+                            //System.out.println("WE ARE AFTER THE RUN");
+                            float[][][] logits = (float[][][]) result.get(0).getValue();
+                            float[] maskLogits = logits[0][maskIndex];
 
-                                        // 2. Map containing mutation:score, e.g: ["+":0.6, " +":0.2, "-":0.1, ...]
-                                        LinkedHashMap<String, Double> preds = getTopKMutations(maskLogits, 5);
-                                        //System.out.println("preds: " + preds);
+                            // 2. Map containing mutation:score, e.g: ["+":0.6, " +":0.2, "-":0.1, ...]
+                            LinkedHashMap<String, Double> preds = getTopKMutations(maskLogits, 5);
+                            //System.out.println("preds: " + preds);
 
-                                        int k = 5;
-                                        PriorityQueue<Integer> pq = new PriorityQueue<>(
-                                                Comparator.comparingDouble(i -> -maskLogits[i])
-                                        );
-                                        for (int i = 0; i < maskLogits.length; i++) pq.add(i);
-                                        List<Integer> topIds = IntStream.range(0, k)
-                                                .mapToObj(_i -> pq.poll())
-                                                .collect(Collectors.toList());
-                                        //System.out.println("topIds: " + topIds);
+                            int k = 5;
+                            PriorityQueue<Integer> pq = new PriorityQueue<>(
+                                    Comparator.comparingDouble(i -> -maskLogits[i])
+                            );
+                            for (int i = 0; i < maskLogits.length; i++) pq.add(i);
+                            List<Integer> topIds = IntStream.range(0, k)
+                                    .mapToObj(_i -> pq.poll())
+                                    .collect(Collectors.toList());
+                            //System.out.println("topIds: " + topIds);
 
-                                        for (int id : topIds) {
-                                            String mutation = "";
-                                            String score = "";
+                            for (int id : topIds) {
+                                String mutation = "";
+                                String score = "";
 
-                                            long[] newIds = inputIds.clone();
-                                            newIds[maskIndex] = id;
-                                            String decoded = tokenizer.decode(newIds);
+                                long[] newIds = inputIds.clone();
+                                newIds[maskIndex] = id;
+                                String decoded = tokenizer.decode(newIds);
 
-                                            for (HashMap.Entry<String, Double> entry : preds.entrySet()) {
-                                                String key = entry.getKey();
-                                                double value = entry.getValue();
+                                for (HashMap.Entry<String, Double> entry : preds.entrySet()) {
+                                    String key = entry.getKey();
+                                    double value = entry.getValue();
 
-                                                mutation = key;
-                                                score = String.valueOf(value);
+                                    mutation = key;
+                                    score = String.valueOf(value);
 
-                                                preds.remove(key);
-                                                break;
-                                            }
-                                            PredictionInfo prediction = new PredictionInfo();
-                                            prediction.statementBefore = codeToMutate.substring(st.position.beginIndex, st.position.endIndex+1);
-                                            prediction.statementAfter = codeToMutate.substring(st.position.beginIndex, ma.position.beginIndex)
-                                                    + mutation
-                                                    + codeToMutate.substring(ma.position.endIndex+1, st.position.endIndex+1);
-                                            prediction.tokenPredicted = mutation;
-                                            prediction.metrics.put("SoftMax", score);
-
-                                            // Equivalent mutation metric
-                                            if(mutation.equals(codeToMutate.substring(ma.position.beginIndex, ma.position.endIndex+1))
-                                            || mutation.trim().equals(codeToMutate.substring(ma.position.beginIndex, ma.position.endIndex+1)))
-                                                prediction.metrics.put("Equivalent", "true");
-                                            else
-                                                prediction.metrics.put("Equivalent", "false");
-
-                                            ma.predictions.add(prediction);
-                                            //System.gc();
-                                        }
-                                        //System.out.println("    <End of thread" + this.getName() + " >\n");
-                                    }
-                                    catch (OrtException e)
-                                    {
-                                        System.out.println("Here is an interesting except... " + e);
-                                        throw new RuntimeException(e);
-                                    }
+                                    preds.remove(key);
+                                    break;
                                 }
-                            };
-                            threads.add(o);
+                                PredictionInfo prediction = new PredictionInfo(mu);
+                                prediction.preCode = codeToMutate.substring(mu.position.beginIndex, mu.position.endIndex+1);
+                                prediction.afterCode = codeToMutate.substring(mu.position.beginIndex, mu.position.beginIndex)
+                                        + mutation
+                                        + codeToMutate.substring(mu.position.endIndex+1, mu.position.endIndex+1);
+                                prediction.tokenPredicted = mutation;
+                                prediction.metrics.put("SoftMax", score);
+
+                                // Equivalent mutation metric
+                                if(mutation.equals(codeToMutate.substring(mu.position.beginIndex, mu.position.endIndex+1))
+                                        || mutation.trim().equals(codeToMutate.substring(mu.position.beginIndex, mu.position.endIndex+1)))
+                                    prediction.metrics.put("Equivalent", "true");
+                                else
+                                    prediction.metrics.put("Equivalent", "false");
+
+                                 mu.children.add(prediction);
+                                //System.gc();
+                            }
+                            //System.out.println("    <End of thread" + this.getName() + " >\n");
+                        }
+                        catch (OrtException e)
+                        {
+                            System.out.println("Here is an interesting except... " + e);
+                            throw new RuntimeException(e);
                         }
                     }
-                }
+                };
+                threads.add(o);
             }
+
+
+
+
+
+
+
+//            for(ClassInfo cl: classes)
+//            {
+//                for(MethodInfo me: cl.methods)
+//                {
+//                    for(StatementInfo st: me.statements)
+//                    {
+//                        for(MaskingInfo ma: st.maskingInfos)
+//                        {
+//                            ObjectForThread o = new ObjectForThread(this)
+//                            {
+//                                @Override
+//                                public void run()
+//                                {
+//                                    //System.out.println("    <Thread number " + this.getName() + " running>");
+//                                    String toMutate =
+//                                            codeToMutate.substring(0,ma.position.beginIndex)
+//                                                    + mask
+//                                                    + codeToMutate.substring(ma.position.endIndex+1);
+//                                    //System.out.println("    <break-4>");
+//                                    // Center the mask
+//                                    String toMutateCenter = centerTheMask(toMutate);
+//
+//                                    //System.out.println("    <break-3>");
+//                                    Encoding encoding = tokenizer.encode(toMutateCenter);
+//                                    //System.out.println("    <break-2>");
+//                                    long[] inputIds = encoding.getIds();
+//                                    long[] attentionMask = encoding.getAttentionMask();
+//                                    long[] typeIds = encoding.getTypeIds(); // Add for Bert
+////                                    System.out.println("inputIds size: " + inputIds.length);
+////                                    System.out.println("attentionMask size: " + attentionMask.length);
+////                                    System.out.println("typeIds size: " + typeIds.length);
+//                                    //System.out.println("    <break-1>");
+//                                    // Determining the mask index
+//                                    int maskIndex = 0;
+//                                    for (String s : encoding.getTokens()) {
+//                                        if (s.trim().equals(((StrategyFillMask)object).mask)) break;
+//                                        maskIndex++;
+//                                    }
+//                                    //System.out.println("    <break0>");
+//                                    try {
+//                                        // 2) Prepare inputs (batch size = 1)
+//                                        OnnxTensor idsTensor = OnnxTensor.createTensor(env, new long[][]{inputIds});
+//                                        OnnxTensor maskTensor = OnnxTensor.createTensor(env, new long[][]{attentionMask});
+//                                        OnnxTensor typeTensor = OnnxTensor.createTensor(env, new long[][]{typeIds});
+//                                        Map<String, OnnxTensor> inputs = Map.of(
+//                                                "input_ids", idsTensor,
+//                                                "attention_mask", maskTensor
+//                                                //"token_type_ids", typeTensor // Add for Bert
+//                                        );
+//
+//                                        long start = System.currentTimeMillis();
+//                                        OrtSession.Result result = session.run(inputs);
+//                                        long end = System.currentTimeMillis();
+//                                        System.out.println("    Time to run: " + (end-start) + "ms");
+//                                        // The first (and only) output is [batch, seq_len, vocab_size]
+//                                        //System.out.println("WE ARE AFTER THE RUN");
+//                                        float[][][] logits = (float[][][]) result.get(0).getValue();
+//                                        float[] maskLogits = logits[0][maskIndex];
+//
+//                                        // 2. Map containing mutation:score, e.g: ["+":0.6, " +":0.2, "-":0.1, ...]
+//                                        LinkedHashMap<String, Double> preds = getTopKMutations(maskLogits, 5);
+//                                        //System.out.println("preds: " + preds);
+//
+//                                        int k = 5;
+//                                        PriorityQueue<Integer> pq = new PriorityQueue<>(
+//                                                Comparator.comparingDouble(i -> -maskLogits[i])
+//                                        );
+//                                        for (int i = 0; i < maskLogits.length; i++) pq.add(i);
+//                                        List<Integer> topIds = IntStream.range(0, k)
+//                                                .mapToObj(_i -> pq.poll())
+//                                                .collect(Collectors.toList());
+//                                        //System.out.println("topIds: " + topIds);
+//
+//                                        for (int id : topIds) {
+//                                            String mutation = "";
+//                                            String score = "";
+//
+//                                            long[] newIds = inputIds.clone();
+//                                            newIds[maskIndex] = id;
+//                                            String decoded = tokenizer.decode(newIds);
+//
+//                                            for (HashMap.Entry<String, Double> entry : preds.entrySet()) {
+//                                                String key = entry.getKey();
+//                                                double value = entry.getValue();
+//
+//                                                mutation = key;
+//                                                score = String.valueOf(value);
+//
+//                                                preds.remove(key);
+//                                                break;
+//                                            }
+//                                            PredictionInfo prediction = new PredictionInfo();
+//                                            prediction.statementBefore = codeToMutate.substring(st.position.beginIndex, st.position.endIndex+1);
+//                                            prediction.statementAfter = codeToMutate.substring(st.position.beginIndex, ma.position.beginIndex)
+//                                                    + mutation
+//                                                    + codeToMutate.substring(ma.position.endIndex+1, st.position.endIndex+1);
+//                                            prediction.tokenPredicted = mutation;
+//                                            prediction.metrics.put("SoftMax", score);
+//
+//                                            // Equivalent mutation metric
+//                                            if(mutation.equals(codeToMutate.substring(ma.position.beginIndex, ma.position.endIndex+1))
+//                                            || mutation.trim().equals(codeToMutate.substring(ma.position.beginIndex, ma.position.endIndex+1)))
+//                                                prediction.metrics.put("Equivalent", "true");
+//                                            else
+//                                                prediction.metrics.put("Equivalent", "false");
+//
+//                                            ma.predictions.add(prediction);
+//                                            //System.gc();
+//                                        }
+//                                        //System.out.println("    <End of thread" + this.getName() + " >\n");
+//                                    }
+//                                    catch (OrtException e)
+//                                    {
+//                                        System.out.println("Here is an interesting except... " + e);
+//                                        throw new RuntimeException(e);
+//                                    }
+//                                }
+//                            };
+//                            threads.add(o);
+//                        }
+//                    }
+//                }
+//            }
             //System.out.println("*** Number of threads generated: " + threads.size() + " ***");
 
             // 2. Start the threads
@@ -339,7 +460,7 @@ public class StrategyFillMask extends Strategy
             // 3. Join all the threads
             for (Future<?> f : futures) f.get();
 
-            fileInfo.classes = classes;
+            //fileInfo.classes = classes;
         }
         catch (Exception e) {
             System.out.println("An error: " + e);

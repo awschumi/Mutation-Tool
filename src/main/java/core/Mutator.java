@@ -1,22 +1,18 @@
 package core;
 
 import compilation.Compiler;
-import export.JsonExport;
 import parser.parsinghandle.ParsingHandler;
 import storage.*;
 import parser.parsinghandle.*;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Handler;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -260,78 +256,75 @@ public class Mutator
         for (FileInfo f : fileInfos) {
             File file = Path.of(f.pathName).toFile();
             try {
-                System.out.println("Pathname: " +f.pathName);
+                System.out.println("Pathname: " + f.pathName);
                 String content = Files.readString(Path.of(f.pathName));
                 Path folderName = Path.of(String.valueOf(exportPath.getFileName()), f.fileName.replace(".", "-"));
                 System.out.println(folderName);
                 int predictionNumber = 0;
-                for (ClassInfo cl : f.classes) {
-                    try {
-                        // Try to create directory
-                        Files.createDirectories(folderName);
-                        for (MethodInfo me : cl.methods) {
-                            for (StatementInfo st : me.statements) {
-                                for (MaskingInfo ma : st.maskingInfos) {
-                                    try {
-                                        for (PredictionInfo pr : ma.predictions) {
 
-                                            // If the mutation is equivalent, don't consider it
-                                            if(pr.metrics.get("Equivalent") != null)
-                                                if(pr.metrics.get("Equivalent").equals("true")) {
-                                                    predictionNumber++;
-                                                    continue;
-                                                };
+                try {
+                    // Try to create directory
+                    Files.createDirectories(folderName);
 
-                                            String codeToCompile = content.substring(0, st.position.beginIndex)
-                                                    + pr.statementAfter
-                                                    + content.substring(st.position.endIndex + 1);
+                    // Get every prediction
+                    for (AbstractInfo ab : f.getSpecificChildren(AbstractInfo.Info.PREDICTION_INFO)) {
+                        PredictionInfo pr = (PredictionInfo) ab;
 
-                                            //Creation of folder number 0, 1, ...
-                                            Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
-
-                                            if(Mutator.getInstance().getFileHandler().tryCompile(
-                                                    f,
-                                                    this.projectPath.toString(),
-                                                    Path.of(f.pathName),
-                                                    codeToCompile,
-                                                    folderNumber,
-                                                    compilers)) {
-
-                                                Files.createDirectories(folderNumber);
-                                                // Creation of the file
-                                                // We want to create the file <=> the file can be compiled
-                                                // --> Compile the file: determine the type (Java, C++, C, etc.)
-                                                File newFile = new File(folderNumber.toFile(), f.fileName);
-                                                //System.out.println(newFile.getAbsolutePath());
-                                                String newFileName = newFile.getAbsolutePath();
-                                                FileWriter newFile1 = new FileWriter(newFileName);
-                                                newFile1.write(codeToCompile);
-                                                newFile1.close();
-
-                                                // Mutant is alive
-                                                pr.metrics.put("Stillborn", "false");
-                                                pr.pathToOutput = folderNumber.toAbsolutePath().toString();
-                                            }
-                                            else
-                                            {
-                                                // Mutant is dead
-                                                pr.metrics.put("Stillborn", "true");
-                                            }
-                                            predictionNumber++;
-                                        }
-                                    } catch (Exception e) {
-                                        predictionNumber++;
-                                    }
+                        try {
+                            // If the mutation is equivalent, don't consider it
+                            if (pr.metrics.get("Equivalent") != null)
+                                if (pr.metrics.get("Equivalent").equals("true")) {
+                                    predictionNumber++;
+                                    continue;
                                 }
+                            ;
+
+                            String codeToCompile = content.substring(0, ((MutationInfo) pr.parent).position.beginIndex)
+                                    + pr.afterCode
+                                    + content.substring(((MutationInfo) pr.parent).position.endIndex + 1);
+
+                            //Creation of folder number 0, 1, ...
+                            Path folderNumber = Path.of(String.valueOf(folderName), String.valueOf(predictionNumber));
+
+                            if (Mutator.getInstance().getFileHandler().tryCompile(
+                                    f,
+                                    this.projectPath.toString(),
+                                    Path.of(f.pathName),
+                                    codeToCompile,
+                                    folderNumber,
+                                    compilers)) {
+
+                                Files.createDirectories(folderNumber);
+                                // Creation of the file
+                                // We want to create the file <=> the file can be compiled
+                                // --> Compile the file: determine the type (Java, C++, C, etc.)
+                                File newFile = new File(folderNumber.toFile(), f.fileName);
+                                //System.out.println(newFile.getAbsolutePath());
+                                String newFileName = newFile.getAbsolutePath();
+                                FileWriter newFile1 = new FileWriter(newFileName);
+                                newFile1.write(codeToCompile);
+                                newFile1.close();
+
+                                // Mutant is alive
+                                pr.metrics.put("Stillborn", "false");
+                                pr.pathToOutput = folderNumber.toAbsolutePath().toString();
+                            } else {
+                                // Mutant is dead
+                                pr.metrics.put("Stillborn", "true");
                             }
+                            predictionNumber++;
+                        } catch (Exception e) {
+                            predictionNumber++;
                         }
-                    } catch (Exception e) {
-                        // Do nothing
                     }
+                } catch (Exception e) {
+                    System.out.println("Strange exception... " + e);
+                    //throw new RuntimeException(e);
                 }
+
+
             } catch (Exception e) {
-                System.out.println("Strange exception... " + e);
-                //throw new RuntimeException(e);
+                // Problem with reading the file
             }
         }
     }

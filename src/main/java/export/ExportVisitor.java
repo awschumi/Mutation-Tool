@@ -14,9 +14,9 @@ public interface ExportVisitor
 
     String visitMethodInfo(MethodInfo me);
 
-    String visitStatementInfo(StatementInfo st);
+    String visitFunctionInfo(FunctionInfo fu);
 
-    String visitMaskingInfo(MaskingInfo ma);
+    String visitMutationInfo(MutationInfo mu);
 
     String visitPredictionInfo(PredictionInfo pr);
 

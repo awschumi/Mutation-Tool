@@ -2,14 +2,39 @@ package storage;
 
 import export.ExportVisitor;
 
-public class FunctionInfo
+public class FunctionInfo extends AbstractInfo
 {
-    public FunctionInfo(AbstractInfo info) {
-        //super(info);
+    // The method name, e.g: "add"
+    public String functionName = "";
+
+    // The method declaration, e.g: "double add(double,double)"
+    public String signature = "";
+
+    public PositionInfo position = new PositionInfo();
+
+    public FunctionInfo()
+    {
+        this.info = Info.FUNCTION_INFO;
     }
 
-//    @Override
-//    public String visit(ExportVisitor visitor) {
-//        return visitor.visitFunctionInfo(this);
-//    }
+    public FunctionInfo(AbstractInfo parent)
+    {
+        super(parent);
+        this.info = Info.FUNCTION_INFO;
+    }
+
+    @Override
+    public String toString() {
+        return "FunctionInfo{" +
+                "functionName='" + functionName + '\'' +
+                ", signature='" + signature + '\'' +
+                ", position=" + position +
+                ", children=" + children +
+                '}';
+    }
+
+    @Override
+    public String visit(ExportVisitor visitor) {
+        return visitor.visitFunctionInfo(this);
+    }
 }

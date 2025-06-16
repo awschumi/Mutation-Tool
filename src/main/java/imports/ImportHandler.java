@@ -1,6 +1,5 @@
 package imports;
 
-import parser.parsinghandle.ParsingHandler;
 import storage.AbstractInfo;
 
 import java.io.File;

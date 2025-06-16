@@ -1,14 +1,11 @@
 package imports;
 
-import core.Language;
 import org.json.JSONException;
 import org.json.JSONObject;
 import storage.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -71,16 +68,17 @@ public class JsonImport extends ImportHandler
                 fileInfo.language = jsonObject.get("language").toString();
                 fileInfo.fileName = jsonObject.get("filename").toString();
                 fileInfo.pathName = jsonObject.get("pathname").toString();
-                fileInfo.strategy = jsonObject.get("strategy").toString();
-                PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
-                if(positionInfo != null) fileInfo.position = positionInfo;
 
-                JSONObject classes = jsonObject.getJSONObject("classinfos");
+                JSONObject classes = jsonObject.getJSONObject("children");
                 Iterator<?> classesIterator = classes.keys();
                 while(classesIterator.hasNext())
                 {
-                    ClassInfo classInfo = (ClassInfo) protectedGetInfo(classes.get(classesIterator.next().toString()).toString());
-                    if(classInfo != null) fileInfo.classes.add(classInfo);
+                    AbstractInfo child = protectedGetInfo(classes.get(classesIterator.next().toString()).toString());
+                    if(child != null)
+                    {
+                        fileInfo.children.add(child);
+                        child.parent = fileInfo;
+                    }
                 }
                 return fileInfo;
             }
@@ -88,15 +86,19 @@ public class JsonImport extends ImportHandler
             {
                 ClassInfo classInfo = new ClassInfo();
                 classInfo.className = jsonObject.get("classname").toString();
-                JSONObject methods = jsonObject.getJSONObject("methodinfos");
+                JSONObject methods = jsonObject.getJSONObject("children");
                 PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
                 if(positionInfo != null) classInfo.position = positionInfo;
 
                 Iterator<?> methodsIterator = methods.keys();
                 while(methodsIterator.hasNext())
                 {
-                    MethodInfo methodInfo = (MethodInfo) protectedGetInfo(methods.get(methodsIterator.next().toString()).toString());
-                    if(methodInfo != null) classInfo.methods.add(methodInfo);
+                    AbstractInfo child = protectedGetInfo(methods.get(methodsIterator.next().toString()).toString());
+                    if(child != null)
+                    {
+                        classInfo.children.add(child);
+                        child.parent = classInfo;
+                    }
                 }
                 return classInfo;
             }
@@ -104,60 +106,71 @@ public class JsonImport extends ImportHandler
             {
                 MethodInfo methodInfo = new MethodInfo();
                 methodInfo.methodName = jsonObject.get("methodname").toString();
-                methodInfo.declaration = jsonObject.get("declaration").toString();
-                JSONObject statements = jsonObject.getJSONObject("statementinfos");
+                methodInfo.signature = jsonObject.get("signature").toString();
+                JSONObject statements = jsonObject.getJSONObject("children");
                 PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
                 if(positionInfo != null) methodInfo.position = positionInfo;
 
                 Iterator<?> statementsIterator = statements.keys();
                 while(statementsIterator.hasNext())
                 {
-                    StatementInfo statementInfo = (StatementInfo) protectedGetInfo(statements.get(statementsIterator.next().toString()).toString());
-                    if(statementInfo != null) methodInfo.statements.add(statementInfo);
+                    AbstractInfo child = protectedGetInfo(statements.get(statementsIterator.next().toString()).toString());
+                    if(child != null)
+                    {
+                        methodInfo.children.add(child);
+                        child.parent = methodInfo;
+                    }
                 }
                 return methodInfo;
             }
-            else if(type.equals("StatementInfo"))
+            else if(type.equals("FunctionInfo"))
             {
-                StatementInfo statementInfo = new StatementInfo();
-                statementInfo.statement = jsonObject.get("statement").toString();
-                JSONObject maskinginfos = jsonObject.getJSONObject("maskinginfos");
+                FunctionInfo functionInfo = new FunctionInfo();
+                functionInfo.functionName = jsonObject.get("functionname").toString();
+                functionInfo.signature = jsonObject.get("signature").toString();
+                JSONObject statements = jsonObject.getJSONObject("children");
                 PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
-                if(positionInfo != null) statementInfo.position = positionInfo;
+                if(positionInfo != null) functionInfo.position = positionInfo;
 
-                Iterator<?> maskingIterator = maskinginfos.keys();
-                while(maskingIterator.hasNext())
+                Iterator<?> statementsIterator = statements.keys();
+                while(statementsIterator.hasNext())
                 {
-                    MaskingInfo maskingInfo = (MaskingInfo) protectedGetInfo(maskinginfos.get(maskingIterator.next().toString()).toString());
-                    if(maskingInfo != null) statementInfo.maskingInfos.add(maskingInfo);
+                    AbstractInfo child = protectedGetInfo(statements.get(statementsIterator.next().toString()).toString());
+                    if(child != null)
+                    {
+                        functionInfo.children.add(child);
+                        child.parent = functionInfo;
+                    }
                 }
-                return statementInfo;
+                return functionInfo;
             }
-            else if(type.equals("MaskingInfo"))
+            else if(type.equals("MutationInfo"))
             {
-                MaskingInfo maskingInfo = new MaskingInfo();
-                maskingInfo.maskingType = jsonObject.get("maskingtype").toString();
-                JSONObject predictions = jsonObject.getJSONObject("predictions");
+                MutationInfo mutationInfo = new MutationInfo();
+                mutationInfo.maskingType = jsonObject.get("maskingtype").toString();
+                JSONObject predictions = jsonObject.getJSONObject("children");
                 PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
-                if(positionInfo != null) maskingInfo.position = positionInfo;
+                if(positionInfo != null) mutationInfo.position = positionInfo;
 
                 Iterator<?> predictionIterator = predictions.keys();
                 while(predictionIterator.hasNext())
                 {
-                    PredictionInfo predictionInfo = (PredictionInfo) protectedGetInfo(predictions.get(predictionIterator.next().toString()).toString());
-                    if(positionInfo != null) maskingInfo.predictions.add(predictionInfo);
+                    AbstractInfo child = protectedGetInfo(predictions.get(predictionIterator.next().toString()).toString());
+                    if(child != null)
+                    {
+                        mutationInfo.children.add(child);
+                        child.parent = mutationInfo;
+                    }
                 }
-                return maskingInfo;
+                return mutationInfo;
             }
             else if(type.equals("PredictionInfo"))
             {
                 PredictionInfo predictionInfo = new PredictionInfo();
                 predictionInfo.tokenPredicted = jsonObject.get("tokenpredicted").toString();
-                predictionInfo.statementBefore = jsonObject.get("statementbefore").toString();
-                predictionInfo.statementAfter = jsonObject.get("statementafter").toString();
+                predictionInfo.preCode = jsonObject.get("precode").toString();
+                predictionInfo.afterCode = jsonObject.get("aftercode").toString();
                 predictionInfo.pathToOutput = jsonObject.get("pathtooutput").toString();
-                PositionInfo positionInfo = this.protectedGetPositionInfo(jsonObject.get("position").toString());
-                if(positionInfo != null) predictionInfo.position = positionInfo;
 
                 // Add metrics
                 JSONObject metrics = jsonObject.getJSONObject("metrics");

@@ -1,13 +1,11 @@
 package core;
 
-import com.github.javaparser.ast.expr.BinaryExpr;
 import storage.ClassInfo;
-import storage.MaskingInfo;
+import storage.MutationInfo;
 import strategy.StrategyFillMask;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class provides methods in order to parse the code
@@ -55,7 +53,7 @@ public abstract class MaskParser
      * @param left If left = true, masks only the left operand, if = false, it's the right operand
      * @param codeInLines The code split in lines
      */
-    public abstract MaskingInfo binaryMaskOperand(Object expr, boolean left, String[] codeInLines);
+    public abstract MutationInfo binaryMaskOperand(Object expr, boolean left, String[] codeInLines);
 
     /**
      * Masks the operator
@@ -63,7 +61,7 @@ public abstract class MaskParser
      * @param expr The expression to mask
      * @param codeInLines The code split in lines
      */
-    public abstract MaskingInfo binaryMaskOperator(Object expr, String[] codeInLines);
+    public abstract MutationInfo binaryMaskOperator(Object expr, String[] codeInLines);
 
     /**
      * Converts a line-column position to an index position

@@ -2,35 +2,30 @@ package storage;
 
 import export.ExportVisitor;
 
-import java.util.ArrayList;
-
-/*
- * This class provides infos about classes for the mutation
- */
 public class ClassInfo extends AbstractInfo
 {
     // The class name e.g: "Class1"
     public String className = "";
 
-    // The info about the methods of the class
-    public ArrayList<MethodInfo> methods = new ArrayList<MethodInfo>();
+    public PositionInfo position = new PositionInfo();
 
-    public void setClassName(String className)
+    public ClassInfo()
     {
-        this.className = className;
+        super();
+        this.info = Info.CLASS_INFO;
     }
 
-    public void addMethodInfo(MethodInfo m)
+    public ClassInfo(AbstractInfo parent)
     {
-        methods.add(m);
+        super(parent);
+        this.info = Info.CLASS_INFO;
     }
 
     @Override
     public String toString() {
         return "ClassInfo{" +
                 "position=" + position +
-                ", methods=" + methods +
-                ", className='" + className + '\'' +
+                ", children=" + children +
                 '}';
     }
 

@@ -4,7 +4,6 @@ import core.Language;
 import core.MaskParser;
 import parser.JavaMaskParser;
 import storage.ClassInfo;
-import storage.MaskingInfo;
 
 import java.io.File;
 import java.io.IOException;

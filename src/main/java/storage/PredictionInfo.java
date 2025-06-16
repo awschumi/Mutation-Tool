@@ -8,23 +8,34 @@ public class PredictionInfo extends AbstractInfo
 {
     public String tokenPredicted = "";
 
-    public String statementBefore = "";
+    public String preCode = "";
 
-    public String statementAfter = "";
+    public String afterCode = "";
 
     public String pathToOutput = "";
 
     public HashMap<String, String> metrics = new HashMap<String, String>();
 
+    public PredictionInfo()
+    {
+        this.info = Info.PREDICTION_INFO;
+    }
+
+    public PredictionInfo(AbstractInfo parent)
+    {
+        super(parent);
+        this.info = Info.PREDICTION_INFO;
+    }
+
     @Override
     public String toString() {
         return "PredictionInfo{" +
                 "tokenPredicted='" + tokenPredicted + '\'' +
-                ", statementBefore='" + statementBefore + '\'' +
-                ", statementAfter='" + statementAfter + '\'' +
+                ", preCode='" + preCode + '\'' +
+                ", afterCode='" + afterCode + '\'' +
                 ", pathToOutput='" + pathToOutput + '\'' +
                 ", metrics=" + metrics +
-                ", position=" + position +
+                ", children=" + children +
                 '}';
     }
 

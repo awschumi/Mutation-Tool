@@ -22,37 +22,21 @@ public class PositionInfo
     // The index in the code where the statement ends, e.g: 28
     public int endIndex = 0;
 
-    public void setBeginLine(int beginLine) {
-        this.beginLine = beginLine;
-    }
-
-    public void setBeginColumn(int beginColumn) {
-        this.beginColumn = beginColumn;
-    }
-
-    public void setEndLine(int endLine) {
-        this.endLine = endLine;
-    }
-
-    public void setEndColumn(int endColumn) {
-        this.endColumn = endColumn;
-    }
-
-    public void setBeginIndex(int beginIndex) {
-        this.beginIndex = beginIndex;
-    }
-
-    public void setEndIndex(int endIndex) {
-        this.endIndex = endIndex;
-    }
+//    public FileInfo(AbstractInfo parent)
+//    {
+//
+//    }
 
     @Override
     public String toString() {
-        String res = "[\nbegin_lin-col: [" + beginLine + "," + beginColumn + "],\n";
-        res += "end_lin-col: [" + endLine + "," + endColumn + "],\n";
-        res += "begin_end-index: [" + beginLine + "," + endIndex + "],\n";
-        res += "]\n";
-        return res;
+        return "PositionInfo{" +
+                "beginLine=" + beginLine +
+                ", beginColumn=" + beginColumn +
+                ", endLine=" + endLine +
+                ", endColumn=" + endColumn +
+                ", beginIndex=" + beginIndex +
+                ", endIndex=" + endIndex +
+                '}';
     }
 
     public String visit(ExportVisitor visitor) {

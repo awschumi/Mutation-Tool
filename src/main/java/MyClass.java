@@ -1,31 +1,19 @@
-import com.google.gson.Gson;
-import compilation.Compiler;
 import compilation.JavaTryCompiler;
-import core.MaskParser;
 import core.Mutator;
-import edu.lu.uni.serval.javabusinesslocs.cli.CliRequest;
-import edu.lu.uni.serval.javabusinesslocs.locator.LocationsCollector;
-import edu.lu.uni.serval.javabusinesslocs.output.*;
-import edu.lu.uni.serval.javabusinesslocs.utils.GsonHolder;
 import export.HtmlExport;
 import export.JsonExport;
 import imports.JsonImport;
-import org.json.JSONObject;
-import parser.CppMaskParser;
-import parser.JavaFileBusinessLocationsParser;
 import parser.JavaMaskParser;
-import storage.*;
+import storage.ClassInfo;
+import storage.FileInfo;
 import strategy.StrategyFillMask;
 import testing.JavaTesting;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-import edu.lu.uni.serval.javabusinesslocs.*;
 
 public class MyClass
 {
@@ -48,7 +36,7 @@ public class MyClass
                 .setThreadsNumber(8);
 
         ArrayList<FileInfo> results;
-        boolean loadFiles = false;
+        boolean loadFiles = true;
         boolean compile = true;
 
         if(!loadFiles)
@@ -114,27 +102,92 @@ public class MyClass
                 throw new RuntimeException(e);
             }
         }
+//
+//        String[] arguments = {
+//                "-in=Sample-Project/src/main/java/calculator/Calculator.java"
+//        };
+//
+//        CliRequest request = CliRequest.parseArgs(arguments);
+//        System.out.println(request);
+//        LocationsCollector collector = request.start();
+//
+//        Gson gson = GsonHolder.getGson();
+//
+//        JavaFileBusinessLocationsParser javaFileBusinessLocationsParser = new JavaFileBusinessLocationsParser();
+//        ArrayList<ClassInfo> classes = javaFileBusinessLocationsParser.generateVariants(Path.of("Sample-Project/src/main/java/calculator/Calculator.java").toFile(), true);
+//        System.out.println(classes);
+//        FileInfo f = new FileInfo();
+//        f.language = "Java";
+//        f.classes = classes;
+//
+//        JsonExport jsonExport = new JsonExport();
+//        System.out.println(f.visit(jsonExport));
+//
+//        mutator.getSharedPool().shutdown();
 
-        String[] arguments = {
-                "-in=Sample-Project/src/main/java/calculator/Calculator.java"
-        };
+//        FileInfo fileInfo = new FileInfo();
+//        fileInfo.fileName = "truc.java";
+//        fileInfo.pathName = "/path/to/truc.java";
+//        fileInfo.language = "Java";
+//
+//            ClassInfo classInfo1 = new ClassInfo(fileInfo);
+//            fileInfo.children.add(classInfo1);
+//            classInfo1.className = "Class1";
+//
+//                MethodInfo methodInfo1 = new MethodInfo(classInfo1);
+//                classInfo1.children.add(methodInfo1);
+//                methodInfo1.signature = "add(double,double)";
+//
+//                    MutationInfo mutationInfo1 = new MutationInfo(methodInfo1);
+//                    methodInfo1.children.add(mutationInfo1);
+//                    mutationInfo1.maskingType = "Type1";
+//
+//                        PredictionInfo predictionInfo1 = new PredictionInfo(mutationInfo1);
+//                        mutationInfo1.children.add(predictionInfo1);
+//                        predictionInfo1.preCode = "before";
+//                        predictionInfo1.afterCode = "after;";
+//
+//                    MutationInfo mutationInfo2 = new MutationInfo(methodInfo1);
+//                    methodInfo1.children.add(mutationInfo2);
+//                    mutationInfo2.maskingType = "Type2";
+//
+//                        PredictionInfo predictionInfo2 = new PredictionInfo(mutationInfo2);
+//                        mutationInfo2.children.add(predictionInfo2);
+//                        predictionInfo1.preCode = "before2";
+//                        predictionInfo1.afterCode = "after2";
+//                        predictionInfo1.metrics.put("SoftMax", "0.97998");
+//
+//
+//            FunctionInfo functionInfo1 = new FunctionInfo(fileInfo);
+//            fileInfo.children.add(functionInfo1);
+//            functionInfo1.signature = "fun(boolean b)";
+//
+//                MutationInfo mutationInfo3 = new MutationInfo(functionInfo1);
+//                functionInfo1.children.add(mutationInfo3);
+//                mutationInfo3.maskingType = "Type3";
+//
+//                    PredictionInfo predictionInfo3 = new PredictionInfo(mutationInfo3);
+//                    mutationInfo3.children.add(predictionInfo3);
+//                    predictionInfo3.preCode = "Code....";
+//                    predictionInfo3.afterCode = "cODE::::";
+//                    predictionInfo3.metrics.put("Metric1", "eeeee");
+//
+//        System.out.println(fileInfo);
+//
+//        System.out.println(fileInfo.visit(new JsonExport()));
+//
+//        JsonImport jsonImport = new JsonImport();
+//        System.out.println(jsonImport.protectedGetInfo(fileInfo.visit(new JsonExport())));
+//        System.out.println();
+//        ArrayList<AbstractInfo> infos = fileInfo.getSpecificChildren(AbstractInfo.Info.MUTATION_INFO);
+//        for(AbstractInfo ab: infos)
+//        {
+//            System.out.println(ab);
+//        }
 
-        CliRequest request = CliRequest.parseArgs(arguments);
-        System.out.println(request);
-        LocationsCollector collector = request.start();
-
-        Gson gson = GsonHolder.getGson();
-
-        JavaFileBusinessLocationsParser javaFileBusinessLocationsParser = new JavaFileBusinessLocationsParser();
-        ArrayList<ClassInfo> classes = javaFileBusinessLocationsParser.generateVariants(Path.of("Sample-Project/src/main/java/calculator/Calculator.java").toFile(), true);
-        System.out.println(classes);
-        FileInfo f = new FileInfo();
-        f.language = "Java";
-        f.classes = classes;
-
-        JsonExport jsonExport = new JsonExport();
-        System.out.println(f.visit(jsonExport));
-
-        mutator.getSharedPool().shutdown();
+//        FileInfo fileInfo = new FileInfo();
+//        ArrayList<ClassInfo> classes = new JavaMaskParser().generateVariants(Files.readString(Path.of("/Users/schumi/eclipse-workspace/Mutation Tool/Sample-Project/src/main/java/calculator/Calculator.java")), true);
+//        fileInfo.children.addAll(classes);
+//        System.out.println(fileInfo.visit(new JsonExport()));
     }
 }

@@ -13,160 +13,130 @@ public class JsonExport implements ExportVisitor
 {
     @Override
     public String visitFileInfo(FileInfo fi) {
-        if(fi == null) return "";
-        String res = "";
+        return visitFileInfoJson(fi).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"FileInfo\",\n"
-                + "\t\"filename\": \"" + fi.fileName + "\",\n"
-                + "\t\"pathname\": \"" + fi.pathName + "\",\n"
-                + "\t\"strategy\": \"" + fi.strategy + "\",\n"
-                + "\t\"language\": \"" + fi.language + "\",\n";
+    public JSONObject visitFileInfoJson(FileInfo fi) {
+        if(fi == null) return new JSONObject();
+        JSONObject export = new JSONObject();
 
-        if(fi.position != null) res += "\t\"position\": " + fi.position.visit(this).replace("\t","\t\t");
+        export.put("type", fi.info.toString());
+        export.put("filename", fi.fileName);
+        export.put("pathname", fi.pathName);
+        export.put("language", fi.language);
 
-        if(!fi.classes.isEmpty())
+        JSONObject children = new JSONObject();
+        int i = 0;
+        for(AbstractInfo ab: fi.children)
         {
-            res += ",\t\"classinfos\": \n" + "\t{\n";
-            int i = 0;
-            for(ClassInfo cl: fi.classes)
-            {
-                res += "\t\t\""+i+"\": \n";
-                res += "\t\t\t" + cl.visit(this);
-                if(i < fi.classes.size()-1) res += ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "}";
+            children.put(String.valueOf(i), new JSONObject(ab.visit(this)));
+            i++;
         }
 
-        res += "\n}";
-
-        return res;
+        export.put("children", children);
+        return export;
     }
 
     @Override
     public String visitClassInfo(ClassInfo cl) {
-        if(cl == null) return "";
-        String res = "";
+        return visitClassInfoJson(cl).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"ClassInfo\",\n"
-                + "\t\"classname\": \"" + cl.className + "\",\n";
+    public JSONObject visitClassInfoJson(ClassInfo cl) {
+        if(cl == null) return new JSONObject();
+        JSONObject export = new JSONObject();
 
-        if(cl.position != null) res += "\t\"position\": " + cl.position.visit(this).replace("\t","\t\t");
+        export.put("type", cl.info.toString());
+        export.put("classname", cl.className);
+        export.put("position", new JSONObject(cl.position.visit(this)));
 
-        if(!cl.methods.isEmpty())
+        JSONObject children = new JSONObject();
+        int i = 0;
+        for(AbstractInfo ab: cl.children)
         {
-            res += ",\t\"methodinfos\": \n" + "\t{\n";
-            int i = 0;
-            for(MethodInfo me: cl.methods)
-            {
-                res += "\t\t\""+i+"\": \n";
-                res += "\t\t\t" + me.visit(this);
-                if(i < cl.methods.size()-1) res += ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "}";
+            children.put(String.valueOf(i), new JSONObject(ab.visit(this)));
+            i++;
         }
 
-        res += "\n}";
-
-        return res;
+        export.put("children", children);
+        return export;
     }
 
     @Override
     public String visitMethodInfo(MethodInfo me) {
-        if(me == null) return "";
-        String res = "";
+        return visitMethodInfoJson(me).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"MethodInfo\",\n"
-                + "\t\"methodname\": \"" + me.methodName + "\",\n"
-                + "\t\"declaration\": \"" + me.declaration + "\",\n";
+    public JSONObject visitMethodInfoJson(MethodInfo me) {
+        if(me == null) return new JSONObject();
+        JSONObject export = new JSONObject();
 
-        if(me.position != null) res += "\t\"position\": " + me.position.visit(this).replace("\t","\t\t");
+        export.put("type", me.info.toString());
+        export.put("methodname", me.methodName);
+        export.put("signature", me.signature);
+        export.put("position", new JSONObject(me.position.visit(this)));
 
-        if(!me.statements.isEmpty())
+        JSONObject children = new JSONObject();
+        int i = 0;
+        for(AbstractInfo ab: me.children)
         {
-            res += ",\t\"statementinfos\": \n" + "\t{\n";
-            int i = 0;
-            for(StatementInfo st: me.statements)
-            {
-                res += "\t\t\""+i+"\": \n";
-                res += "\t\t\t" + st.visit(this);
-                if(i < me.statements.size()-1) res += ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "}";
+            children.put(String.valueOf(i), new JSONObject(ab.visit(this)));
+            i++;
         }
 
-        res += "\n}";
-        return res;
+        export.put("children", children);
+        return export;
     }
 
     @Override
-    public String visitStatementInfo(StatementInfo st) {
-        if(st == null) return "";
-        String res = "";
+    public String visitFunctionInfo(FunctionInfo fu) {
+        return visitFunctionInfoJson(fu).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"StatementInfo\",\n"
-                + "\t\"statement\": \"" + st.statement.replace("\n", "\\n").replace("\"", "\\\"") + "\",\n";
+    public JSONObject visitFunctionInfoJson(FunctionInfo fu) {
+        if(fu == null) return new JSONObject();
+        JSONObject export = new JSONObject();
 
-        if(st.position != null) res += "\t\"position\": " + st.position.visit(this).replace("\t","\t\t");
+        export.put("type", fu.info.toString());
+        export.put("functionname", fu.functionName);
+        export.put("signature", fu.signature);
+        export.put("position", new JSONObject(fu.position.visit(this)));
 
-        if(!st.maskingInfos.isEmpty())
+        JSONObject children = new JSONObject();
+        int i = 0;
+        for(AbstractInfo ab: fu.children)
         {
-            res += ",\t\"maskinginfos\": \n" + "\t{\n";
-            int i = 0;
-            for(MaskingInfo mask: st.maskingInfos)
-            {
-                res += "\t\t\""+i+"\": \n";
-                res += "\t\t\t" + mask.visit(this);
-                if(i < st.maskingInfos.size()-1) res += ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "}";
+            children.put(String.valueOf(i), new JSONObject(ab.visit(this)));
+            i++;
         }
 
-        res += "\n}";
-
-        return res;
+        export.put("children", children);
+        return export;
     }
 
     @Override
-    public String visitMaskingInfo(MaskingInfo ma) {
-        if(ma == null) return "";
-        String res = "";
+    public String visitMutationInfo(MutationInfo mu) {
+        return visitMutationInfoJson(mu).toString();
+    }
 
-        res += "{" + "\n"
-                + "\t\"type\": \"MaskingInfo\",\n"
-                + "\t\"maskingtype\": \"" + ma.maskingType + "\",\n";
+    public JSONObject visitMutationInfoJson(MutationInfo mu) {
+        if(mu == null) return new JSONObject();
+        JSONObject export = new JSONObject();
 
-        if(ma.position != null) res += "\t\"position\": " + ma.position.visit(this).replace("\t","\t\t");
+        export.put("type", mu.info.toString());
+        export.put("maskingtype", mu.maskingType);
+        export.put("position", new JSONObject(mu.position.visit(this)));
 
-        if(!ma.predictions.isEmpty())
+        JSONObject children = new JSONObject();
+        int i = 0;
+        for(AbstractInfo ab: mu.children)
         {
-            res += ",\t\"predictions\": \n" + "\t{\n";
-            int i = 0;
-            for(PredictionInfo pred: ma.predictions)
-            {
-                res += "\t\t\""+i+"\": \n";
-                res += "\t\t\t" + pred.visit(this);
-                if(i < ma.predictions.size()-1) res += ",\n";
-                else res += "\n";
-                i++;
-            }
-            res += "}";
+            children.put(String.valueOf(i), new JSONObject(ab.visit(this)));
+            i++;
         }
 
-        res += "\n}";
-
-        return res;
+        export.put("children", children);
+        return export;
     }
 
     @Override
@@ -182,15 +152,14 @@ public class JsonExport implements ExportVisitor
 
         export.put("type", "PredictionInfo");
         export.put("tokenpredicted", pr.tokenPredicted);
-        export.put("statementbefore", pr.statementBefore);
-        export.put("statementafter", pr.statementAfter);
+        export.put("precode", pr.preCode);
+        export.put("aftercode", pr.afterCode);
         export.put("pathtooutput", pr.pathToOutput);
 
         JSONObject metrics = new JSONObject();
         for(Map.Entry<String, String> entry: pr.metrics.entrySet())
             metrics.put(entry.getKey(), entry.getValue());
         export.put("metrics", metrics);
-        export.put("position", this.visitPositionInfoJson(pr.position));
 
         return export;
     }

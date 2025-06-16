@@ -2,9 +2,6 @@ package storage;
 
 import export.ExportVisitor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class FileInfo extends AbstractInfo
 {
     // e.g: Class1.java
@@ -16,29 +13,27 @@ public class FileInfo extends AbstractInfo
     // e.g: Java
     public String language = "";
 
-    // e.g: Fill-mask
-    public String strategy = "";
+    public FileInfo()
+    {
+        super();
+        this.info = Info.FILE_INFO;
+    }
 
-    /* e.g:
-            <"mask":"<mask>",
-             "sep":"<s>",
-             "cls":"</s>",
-             "LLM":"GPT-4o-mini">
-     */
-    public HashMap<String, String> otherInfo = new HashMap<String, String>();
+    public FileInfo(AbstractInfo parent)
+    {
+        super(parent);
+        this.info = Info.FILE_INFO;
+    }
 
-    public ArrayList<ClassInfo> classes = new ArrayList<ClassInfo>();
 
     @Override
     public String toString() {
         return "FileInfo{" +
-                "\nfileName='" + fileName + '\'' +
-                ", \npathName='" + pathName + '\'' +
-                ", \nlanguage='" + language + '\'' +
-                ", \nstrategy='" + strategy + '\'' +
-                ", \notherInfo=" + otherInfo +
-                ", \nclasses=" + classes +
-                "\n}";
+                "fileName='" + fileName + '\'' +
+                ", pathName='" + pathName + '\'' +
+                ", language='" + language + '\'' +
+                ", children=" + children +
+                '}';
     }
 
     @Override
